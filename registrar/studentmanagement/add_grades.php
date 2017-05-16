@@ -29,6 +29,54 @@
       $last_name = $row['last_name'];
     }
 ?>
+    <?php
+    $stud_id = $_GET['stud_id'];
+    $stryr = "";
+    if($_GET['yr_level'] > 1) {
+    $pschool_year = "";
+    $yr_level_1 = intval($_GET['yr_level'])-1;
+    $statement = "SELECT distinct(schl_name) as 'schl_name', studentsubjects.yr_level, studentsubjects.schl_year FROM pcnhsdb.studentsubjects left join subjects on studentsubjects.subj_id = subjects.subj_id left join pcnhsdb.grades on studentsubjects.stud_id = grades.stud_id where studentsubjects.yr_level = '$yr_level_1' and studentsubjects.stud_id = '$stud_id';";
+    $result = DB::query($statement);
+    if(count($result) > 0) {
+    foreach ($result as $row) {
+    $pschool_year = $row['schl_year'];
+    }
+    $explode_pschool_year = explode("-", $pschool_year);
+    $yr1 = intval($explode_pschool_year[0]);
+    $yr2 = intval($explode_pschool_year[1]);
+    $yr1plus1 = $yr1+1;
+    $yr2plus1 = $yr2+1;
+    $stryr = $yr1plus1.' - '.$yr2plus1;
+    }
+    }else {
+    $pschool_year = "";
+    $statement = "SELECT * FROM pcnhsdb.students NATURAL JOIN primaryschool where stud_id = '$stud_id';";
+    $result = DB::query($statement);
+    if(count($result) > 0) {
+    foreach ($result as $row) {
+    $pschool_year = $row['pschool_year'];
+    }
+    $explode_pschool_year = explode("-", $pschool_year);
+    $yr1 = intval($explode_pschool_year[0]);
+    $yr2 = intval($explode_pschool_year[1]);
+    $yr1plus1 = $yr1+1;
+    $yr2plus1 = $yr2+1;
+    $stryr = $yr1plus1.' - '.$yr2plus1;
+    }
+
+    }
+    ?>
+    <?php
+    $stud_id = $_GET['stud_id'];
+    $statement = "SELECT * from students where stud_id = '$stud_id'";
+    $second_school_name = "";
+    $result = DB::query($statement);
+    if(count($result) > 0) {
+       foreach ($result as $row) {
+        $second_school_name = $row['second_school_name'];
+        } 
+    }
+    ?>
 <html>
     <head>
         <title>Add Student Grades</title>
@@ -51,7 +99,6 @@
 
         <!-- Custom Theme Style -->
         <link href="../../assets/css/custom.min.css" rel="stylesheet">
-        <link href="../../assets/css/tstheme/style.css" rel="stylesheet">
         <link href="../../assets/css/easy-autocomplete-topnav.css" rel="stylesheet">
 
         <!--[if lt IE 9]>
@@ -162,15 +209,9 @@ SP;
                             <label class="control-label col-md-3 col-sm-3 col-xs-12">School Name</label>
                             <div class="col-md-4 col-sm-6 col-xs-12">
                                 <?php
-                                $stud_id = $_GET['stud_id'];
-                                $statement = "SELECT * from students where stud_id = '$stud_id'";
-                                $result = DB::query($statement);
-                                foreach ($result as $row) {
-                                  $second_school_name = $row['second_school_name'];
                                   echo <<<OPTION2
                                       <input class="form-control col-md-7 col-xs-12" required="required" type="text" name="schl_name" value="$second_school_name" placeholder="School Name">
 OPTION2;
-                                }
                                 ?>
                                 </div>
                             </div>
@@ -181,53 +222,6 @@ OPTION2;
 
                                 <label class="control-label col-md-3 col-sm-3 col-xs-12">School Year</label>
                                 <div class="col-md-4 col-sm-6 col-xs-12">
-                                    <?php
-                                        $stud_id = $_GET['stud_id'];
-                                        $stryr = "";
-                                        if($_GET['yr_level'] > 1) {
-
-                                            $pschool_year = "";
-
-                                            $yr_level_1 = intval($_GET['yr_level'])-1;
-                                            $statement = "SELECT distinct(schl_name) as 'schl_name', studentsubjects.yr_level, studentsubjects.schl_year FROM pcnhsdb.studentsubjects left join subjects on studentsubjects.subj_id = subjects.subj_id left join pcnhsdb.grades on studentsubjects.stud_id = grades.stud_id where studentsubjects.yr_level = '$yr_level_1' and studentsubjects.stud_id = '$stud_id';";
-                                            $result = DB::query($statement);
-                                            
-                                            foreach ($result as $row) {
-                                              $pschool_year = $row['schl_year'];
-                                            }
-
-                                            $explode_pschool_year = explode("-", $pschool_year);
-
-                                            $yr1 = intval($explode_pschool_year[0]);
-                                            $yr2 = intval($explode_pschool_year[1]);
-
-                                            $yr1plus1 = $yr1+1;
-                                            $yr2plus1 = $yr2+1;
-                                            $stryr = $yr1plus1.' - '.$yr2plus1;
-
-                                        }else {
-                                             $pschool_year = "";
-
-                                            $statement = "SELECT * FROM pcnhsdb.students NATURAL JOIN primaryschool where stud_id = '$stud_id';";
-                                            $result = DB::query($statement);
-                                            if(count($result) > 0) {
-                                                foreach ($result as $row) {
-                                                  $pschool_year = $row['pschool_year'];
-                                                }
-
-
-                                                $explode_pschool_year = explode("-", $pschool_year);
-
-                                                $yr1 = intval($explode_pschool_year[0]);
-                                                $yr2 = intval($explode_pschool_year[1]);
-
-                                                $yr1plus1 = $yr1+1;
-                                                $yr2plus1 = $yr2+1;
-                                                $stryr = $yr1plus1.' - '.$yr2plus1;
-                                            }
-                                            
-                                        }
-                                    ?>
                                     <input type="text" class="form-control col-md-7 col-xs-12" name="schl_year" placeholder="YYYY - YYYY" data-inputmask="'mask': '9999 - 9999'" value=<?php echo "'$stryr'"; ?> required="" >
                                     <div id="sy-input-error">
                                     <?php
@@ -281,8 +275,8 @@ SP;
                                 <a style="color: red"><i class="fa fa-info-circle"></i> Select to override the default <strong>Student Curriculum.</strong></a>
                             </div>
                         </div>
-                            <div class="clearfix"></div>
-                            <div class="ln_solid"></div>
+                        <div class="clearfix"></div>
+                        <div class="ln_solid"></div>
                             <div class="form-group">
                                 <!-- <div class="col-md-6"></div> -->
                                 <div class="col-md-3 pull-right">
@@ -292,6 +286,54 @@ SP;
                                 </div>
                             </div>
                         </form>
+                        <div class="ln_solid"></div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h2>Special Cases <small>Click only if one of the cases here applied to the student</small></h2>
+                            <form class="form-horizontal form-label-left" action=<?php echo "phpinsert/special_cases_insert.php?stud_id=$stud_id&yr_level=$yr_level"; ?> method="POST">
+                                 <div class="item form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">School Name</label>
+                            <div class="col-md-4 col-sm-6 col-xs-12">
+                                <?php
+                                echo <<<OPTION2
+                                    <input class="form-control col-md-7 col-xs-12" required="required" type="text" name="s_schl_name" value="$second_school_name" placeholder="School Name">
+OPTION2;
+                                    ?>
+                                </div>
+                            </div>
+                                <div class="item form-group">
+                                    <label class="control-label col-md-3 col-sm-2 col-xs-12">School Year</label>
+                                    <div class="col-md-4 col-sm-6 col-xs-12">
+                                        <input type="text" class="form-control col-md-7 col-xs-12" name="s_schl_year" placeholder="YYYY - YYYY" data-inputmask="'mask': '9999 - 9999'" value=<?php echo "'$stryr'"; ?> required="">
+                                        <div id="sy-input-error">
+                                            <?php
+                                            if(isset($_SESSION['error_message'])) {
+                                            echo $_SESSION['error_message'];
+                                            unset($_SESSION['error_message']);
+                                            }
+                                            ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Remarks</label>
+                                    <div class="col-md-4 col-sm-6 col-xs-12">
+                                        <select class="form-control col-md-7 col-xs-12" name="remarks" required="">
+                                           <option value="">NO SELECTED</option>
+                                           <option value="PP">PEPT PASSER</option>
+                                           <option value="D">DROPPED</option>
+                                           <option value="T">TRANSFERRED</option>
+                                           <option value="R">REPEATER</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-6 pull-right">
+                                    <button type="submit" class="btn btn-danger">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -311,16 +353,6 @@ SP;
             <script src="../../resources/libraries/nprogress/nprogress.js"></script>
             <!-- Custom Theme Scripts -->
             <script src= "../../assets/js/jquery.easy-autocomplete.js"></script>
-                <script type="text/javascript">
-                  $(function() {
-                  $('.recent-request').tablesorter();
-                  $('.tablesorter-bootstrap').tablesorter({
-                  theme : 'bootstrap',
-                  headerTemplate: '{content} {icon}',
-                  widgets    : ['zebra','columns', 'uitheme']
-                  });
-                  });
-                </script>
                 <!-- Scripts -->
                 <script type="text/javascript">
                 var options = {
@@ -353,7 +385,7 @@ SP;
                 $.listen('parsley:field:validate', function() {
                 validateFront();
                 });
-                $('#val-gr .btn').on('click', function() {
+                $('#val-gr #send').on('click', function() {
                 $('#val-gr').parsley().validate();
                 validateFront();
                 });

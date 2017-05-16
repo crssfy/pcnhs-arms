@@ -350,6 +350,7 @@ foreach ($result as $row) {
 																				<th data-sorter="false">School Year</th>
 																				<th data-sorter="false">Average Grade</th>
 																				<th data-sorter="false">Total Credits Earned</th>
+																				<th data-sorter="false">Remarks</th>
 																				<th data-sorter="false">Action</th>
 																			</tr>
 																		</thead>
@@ -366,7 +367,7 @@ foreach ($result as $row) {
 																			}
 																			$statement = "SELECT * FROM pcnhsdb.grades WHERE stud_id = '$stud_id' order by yr_level asc;";
 																			$result = DB::query($statement);
-																			$result_count = DB::count($statement);
+																			$result_count = count($result);
 																			$grade_count = 0;
 																			foreach ($result as $row) {
 																			  $grade_count += 1;
@@ -375,6 +376,7 @@ foreach ($result as $row) {
 																			  $schl_year = $row['schl_year'];
 																			  $average_grade = $row['average_grade'];
 																			  $average_grade = number_format($average_grade, 2);
+																			  $remarks = $row['remarks'];
 																			  $total_credit = $row['total_credit'];
 																			  echo <<<GRADES
 																			    <tr>
@@ -383,9 +385,11 @@ foreach ($result as $row) {
 																			      <td>$schl_year</td>
 																			      <td>$average_grade</td>
 																			      <td>$total_credit</td>
+																			      <td>$remarks</td>
 																			      <td>
 																			        <center>
 																			        <a class="btn btn-primary btn-xs" href="subject_grades.php?stud_id=$stud_id&yr_level=$yr_level">View Grades</a>
+																			        <br>
 																			        <a href="edit_grade.php?stud_id=$stud_id&yr_level=$yr_level"><button type="button" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></button></a>
 GRADES;
 																			        if($result_count == $yr_level && !$already_generated) {
@@ -416,8 +420,22 @@ REMOVE;
 																	</div>
 																</div>
 																<?php
+																	$repeat_year = false;
 																	$next_grade = $grade_count+1;
-																	if($grade_count < 4) {
+																	$result = DB::query($statement);
+																	if(count($result) > 0) {
+																		foreach($result as $row) {
+																			$remarks = $row['remarks'];
+																			if($remarks == "DROPPED" || $remarks == "REPEATER") {
+																				$repeat_year = true;
+																				$grade_count -= 1;
+																			}
+																		}
+																	}
+																	if($grade_count < 4 && !$repeat_year) {
+																		echo "<a class='btn btn-success pull-right' href='../../registrar/studentmanagement/add_grades.php?stud_id=$stud_id&yr_level=$next_grade'><i class='fa fa-plus m-right-xs'></i> Add Grades</a>";
+																	}elseif($repeat_year){
+																		$next_grade -= 1;
 																		echo "<a class='btn btn-success pull-right' href='../../registrar/studentmanagement/add_grades.php?stud_id=$stud_id&yr_level=$next_grade'><i class='fa fa-plus m-right-xs'></i> Add Grades</a>";
 																	}else {
 																		echo "<a class='btn btn-success pull-right disabled' href='#'><i class='fa fa-plus m-right-xs'></i> Add Grades</a>";

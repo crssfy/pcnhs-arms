@@ -16,7 +16,7 @@
 			$insertgrades = "";
 			$comment = "";
 			$credit_earned = htmlspecialchars($_POST['credit_earned']);
-
+			$average_grade = round($average_grade, 3);
 			header('Content-type:text/csv');
 			header("Content-Disposition: attachment; filename=$stud_id-year-level-$yr_level-partial-save.csv");
 			header("Content-Transfer-Encoding: UTF-8");
