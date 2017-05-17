@@ -9,26 +9,27 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        
-        
+
+
         <!-- NProgress -->
         <link href="../../resources/libraries/nprogress/nprogress.css" rel="stylesheet">
         <!-- Bootstrap -->
         <link href="../../resources/libraries/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
         <!-- Font Awesome -->
         <link href="../../resources/libraries/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-        
+
         <!-- Datatables -->
         <link href="../../resources/libraries/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-        
+
         <!-- Custom Theme Style -->
         <link href="../../assets/css/custom.min.css" rel="stylesheet">
         <link href="../../assets/css/tstheme/style.css" rel="stylesheet">
-        
+        <link href="../../assets/css/easy-autocomplete-topnav.css" rel="stylesheet">
+
         <!--[if lt IE 9]>
         <script src="../js/ie8-responsive-file-warning.js"></script>
         <![endif]-->
-        
+
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -47,7 +48,7 @@
                     echo $_SESSION['error_pop'];
                     unset($_SESSION['error_pop']);
                 }
-            ?>            
+            ?>
             <div class="x_panel">
                 <div class="x_title">
                     <h2>Add Attendance - <small>Year Level: <?php echo $_GET['yr_lvl'] ?></small></h2>
@@ -59,9 +60,6 @@
                             <?php
                                         $stud_id = $_GET['stud_id'];
                                         $yr_lvl = $_GET['yr_lvl'];
-                                        if(!$conn) {
-                                            die("Connection failed: " . mysqli_connect_error());
-                                        }
 
                                         if($_GET['yr_lvl'] > 1) {
 
@@ -69,41 +67,36 @@
 
                                             $yr_lvl = intval($_GET['yr_lvl'])-1;
                                             $statement = "SELECT * from attendance where stud_id = '$stud_id' and yr_lvl = $yr_lvl;";
-                                            $result = $conn->query($statement);
-                                            if ($result->num_rows > 0) {
-                                                // output data of each row
-                                                while($row = $result->fetch_assoc()) {
-                                                    $pschool_year = $row['schl_yr'];
-                                                }
+                                            $result = DB::query($statement);
+                                            foreach ($result as $row) {
+                                              $pschool_year = $row['schl_yr'];
                                             }
 
                                             $explode_pschool_year = explode("-", $pschool_year);
 
                                             $yr1 = intval($explode_pschool_year[0]);
                                             $yr2 = intval($explode_pschool_year[1]);
-                                            
+
                                             $yr1plus1 = $yr1+1;
                                             $yr2plus1 = $yr2+1;
                                             $stryr = $yr1plus1.' - '.$yr2plus1;
 
                                         }else {
                                              $pschool_year = "";
-                                        
+
                                             $statement = "SELECT * FROM pcnhsdb.students NATURAL JOIN primaryschool where stud_id = '$stud_id';";
-                                            $result = $conn->query($statement);
-                                            if ($result->num_rows > 0) {
-                                                // output data of each row
-                                                while($row = $result->fetch_assoc()) {
-                                                    $pschool_year = $row['pschool_year'];
-                                                }
+                                            $result = DB::query($statement);
+                                            foreach ($result as $row) {
+                                              $pschool_year = $row['pschool_year'];
                                             }
 
-                                            
+
+
                                             $explode_pschool_year = explode("-", $pschool_year);
 
                                             $yr1 = intval($explode_pschool_year[0]);
                                             $yr2 = intval($explode_pschool_year[1]);
-                                            
+
                                             $yr1plus1 = $yr1+1;
                                             $yr2plus1 = $yr2+1;
                                             $stryr = $yr1plus1.' - '.$yr2plus1;
@@ -152,7 +145,7 @@
                 </div>
             </div>
             <?php include "../../resources/templates/registrar/footer.php"; ?>
-            
+
             <!-- Scripts -->
             <!-- jQuery -->
             <script src="../../resources/libraries/jquery/dist/jquery.min.js" ></script>
@@ -166,6 +159,31 @@
             <!-- NProgress -->
             <script src="../../resources/libraries/nprogress/nprogress.js"></script>
             <!-- Custom Theme Scripts -->
+            <script src= "../../assets/js/jquery.easy-autocomplete.js"></script>
+                <!-- Scripts -->
+                <script type="text/javascript">
+                var options = {
+                url: function(phrase) {
+                return "phpscript/student_search.php?query="+phrase;
+                },
+                getValue: function(element) {
+                return element.name;
+                },
+                ajaxSettings: {
+                dataType: "json",
+                method: "POST",
+                data: {
+                dataType: "json"
+                }
+                },
+                preparePostData: function(data) {
+                data.phrase = $("#search_key").val();
+                return data;
+                },
+                requestDelay: 200
+                };
+                $("#search_key").easyAutocomplete(options);
+                </script>
             <script src= "../../assets/js/custom.min.js"></script>
             <!-- Scripts -->
             <!-- Parsley -->

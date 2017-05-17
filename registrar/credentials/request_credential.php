@@ -9,25 +9,26 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		
-		
-		
+
+
+
 		<!-- Bootstrap -->
 		<link href="../../resources/libraries/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 		<!-- Font Awesome -->
 		<link href="../../resources/libraries/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-		
+		<!-- NProgress -->
+		<link href="../../resources/libraries/nprogress/nprogress.css" rel="stylesheet">
 		<!-- Datatables -->
 		<link href="../../resources/libraries/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-		
+
 		<!-- Custom Theme Style -->
 		<link href="../../assets/css/custom.min.css" rel="stylesheet">
 		<link href="../../assets/css/easy-autocomplete.css" rel="stylesheet">
-		
+
 		<!--[if lt IE 9]>
 		<script src="../../js/ie8-responsive-file-warning.js"></script>
 		<![endif]-->
-		
+
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 		<!--[if lt IE 9]>
 		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -38,10 +39,37 @@
 		<!-- Sidebar -->
 		<?php include "../../resources/templates/registrar/sidebar.php"; ?>
 		<!-- Top Navigation -->
-		<?php include "../../resources/templates/registrar/top-nav.php"; ?>
+		<div class="top_nav">
+			<div class="nav_menu no-print">
+				<nav class="navbar">
+					<div class="col-md-2">
+						<div class="nav toggle">
+							<a id="menu_toggle"><i class="fa fa-bars"></i></a>
+						</div>
+					</div>
+					<ul class="nav navbar-nav pull-right">
+						<li class="">
+							<a href="javascript:" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+								<img src="../../assets/images/icon-user-default.png" alt="">Registrar
+								<span class=" fa fa-angle-down"></span>
+							</a>
+							<ul class="dropdown-menu dropdown-usermenu pull-right">
+								<li><a href="../../help.php" target="_blank">Help</a></li>
+								<li><a href="https://goo.gl/forms/Db1YtGkquWuIIEeB3" target="_blank">Report an Issue</a></li>
+								<li><a href="../../logout.php"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+							</ul>
+						</li>
+						
+					</ul>
+				</li>
+			</ul>
+			
+		</nav>
+		</div>
+		</div>
 		<!-- Contents Here -->
 		<div class="right_col" role="main">
-			
+
 			<div class="x_panel">
 				<div class="x_title">
 					<h2>New Credential Request<small></small></h2>
@@ -52,8 +80,8 @@
 				<div class="clearfix"></div>
 			</div>
 			<div class="x_content">
-				
-				
+
+
 				<form id="choose_cred" class="form-horizontal form-label-left" action="verify_student.php" method="GET" >
 						<div class="form-group">
 							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="full-name">Full Name <span class="required">*</span>
@@ -63,25 +91,16 @@
 								</div>
 							</div>
 						<div class="form-group">
-							<label class="control-label col-md-3 col-sm-3 col-xs-12">School Year Graduated/Last Attended</label>
-							<div class="col-md-6 col-sm-6 col-xs-12">
-								<input class="form-control col-md-7 col-xs-12" type="text" name="year-graduated">
-							</div>
-						</div>
-						<div class="form-group">
                         	<label class="control-label col-md-3 col-sm-3 col-xs-12">Choose Credential <span class="required">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                           <select id="credential" class="form-control" name="credential" required>
 							<option value="">Choose..</option>
 							<?php
-								if(!$conn) {
-									die("Connection failed: " . mysqli_connect_error());
-								}
+
 								$statement = "SELECT * FROM credentials";
-								$result = $conn->query($statement);
-								if ($result->num_rows > 0) {
-									// output data of each row
-									while($row = $result->fetch_assoc()) {
+								$result = DB::query($statement);
+								if (count($result) > 0) {
+									foreach ($result as $row) {
 										$cred_id = $row['cred_id'];
 										$cred_name = $row['cred_name'];
 
@@ -96,9 +115,12 @@
 							<label class="control-label col-md-3 col-sm-3 col-xs-12">Purpose <span class="required">*</span>
 						</label>
 						<div class="col-md-6 col-sm-6 col-xs-12">
-							<select id="purpose" class="form-control" onchange="disableOthers();" name="purpose" required>
+							<select id="purpose" class="form-control" onchange="disableOthers();" name="purpose">
 								<option value="">Choose..</option>
 								<option value="employment">Employment</option>
+								<option value="local">Local</option>
+								<option value="abroad">Abroad</option>
+								<option value="change of name">Change of Name</option>
 							</select>
 						</div>
 						</div>
@@ -110,10 +132,10 @@
 							</div>
 						</div>
 						<div class="ln_solid"></div>
-								
+
 						<div class="clearfix"></div>
 						<br>
-					
+
 						<!--  -->
 						<!-- this row will not appear when printing -->
 						<div class="row no-print">
@@ -137,37 +159,39 @@
 		<script src= "../../resources/libraries/fastclick/lib/fastclick.js"></script>
 		<!-- input mask -->
 		<script src= "../../resources/libraries/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js"></script>
+		<!-- NProgress -->
+	  <script src="../../resources/libraries/nprogress/nprogress.js"></script>
 		<!-- Custom Theme Scripts -->
-		<script src= "../../assets/js/custom.min.js"></script>
 		<script src= "../../assets/js/jquery.easy-autocomplete.js"></script>
-		<script type="text/javascript">
-			var options = {
-			  url: function(phrase) {
-			    return "phpscript/student_search.php?query="+phrase;
-			  },
+	<script type="text/javascript">
+	      var options = {
+	        url: function(phrase) {
+	          return "phpscript/student_search.php?query="+phrase;
+	        },
 
-			  getValue: function(element) {
-			    return element.name;
-			  },
+	        getValue: function(element) {
+	          return element.name;
+	        },
 
-			  ajaxSettings: {
-			    dataType: "json",
-			    method: "POST",
-			    data: {
-			      dataType: "json"
-			    }
-			  },
+	        ajaxSettings: {
+	          dataType: "json",
+	          method: "POST",
+	          data: {
+	            dataType: "json"
+	          }
+	        },
 
-			  preparePostData: function(data) {
-			    data.phrase = $("#full-name").val();
-			    return data;
-			  },
+	        preparePostData: function(data) {
+	          data.phrase = $("#full-name").val();
+	          return data;
+	        },
 
-			  requestDelay: 200
-			};
+	        requestDelay: 200
+	      };
 
-			$("#full-name").easyAutocomplete(options);
-		</script>
+	      $("#full-name").easyAutocomplete(options);
+	</script>
+		<script src= "../../assets/js/custom.min.js"></script>
 		<script type="text/javascript">
 			function disableOthers() {
 				var purpose = document.getElementById('purpose').value;

@@ -8,7 +8,7 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		
+
 		<!-- jQuery -->
 	    <script src="../../resources/libraries/jquery/dist/jquery.min.js" ></script>
 
@@ -27,19 +27,20 @@
 	    <link href="../../resources/libraries/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 	    <!-- Font Awesome -->
 	    <link href="../../resources/libraries/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-	    
+
 	    <!-- Datatables -->
 	    <link href="../../resources/libraries/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-	    
+
 	    <!-- Custom Theme Style -->
 	    <link href="../../assets/css/custom.min.css" rel="stylesheet">
 	     <!-- Custom Theme Style -->
 	    <link href="../../assets/css/customstyle.css" rel="stylesheet">
-		
+	    <link href="../../assets/css/easy-autocomplete-topnav.css" rel="stylesheet">
+
 		<!--[if lt IE 9]>
 		<script src="../js/ie8-responsive-file-warning.js"></script>
 		<![endif]-->
-		
+
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 		<!--[if lt IE 9]>
 		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -63,7 +64,7 @@
 			</div>
 			<div class="">
 				<div class="row top_tiles">
-					
+
 				</div>
 			</div>
 			<div class="row">
@@ -87,19 +88,16 @@
 										<th class="column-title" data-sorter="false">Price</th>
 										<th class="column-title" data-sorter="false">Action</th>
 									</th>
-									
+
 								</tr>
 							</thead>
 							<tbody>
-								
-								
+
+
 								<?php
 									require_once "../../resources/config.php";
-									if(!$conn) {
-										die("Connection failed: " . mysqli_connect_error());
-									}
 									$start=0;
-                   					$limit=20;
+                  $limit=20;
 
 									if(isset($_GET['page'])){
 				                      $page=$_GET['page'];
@@ -108,9 +106,9 @@
 				                      $page=1;
 				                    }
 									$statement = "SELECT * FROM pcnhsdb.credentials limit $start, $limit";
-									$result = $conn->query($statement);
-									if($result->num_rows>0) {
-										while($row=$result->fetch_assoc()) {
+									$result = DB::query($statement);
+									if (count($result) > 0) {
+										foreach ($result as $row) {
 											$cred_id = $row['cred_id'];
 											$cred_name = $row['cred_name'];
 											$price = $row['price'];
@@ -128,16 +126,17 @@
 CURR;
 										}
 									}
-									
+
 								?>
-								
+
 							</tbody>
 						</table>
 						<?php
-		                  $statement = "SELECT * FROM pcnhsdb.credentials;";
-		                    $rows = mysqli_num_rows(mysqli_query($conn, $statement));
+		                  	$statement = "SELECT * FROM pcnhsdb.credentials;";
+												$result = DB::query($statement);
+		                    $rows = count($result);
 		                    $total = ceil($rows/$limit);
-		                    
+
 		                    echo '<div class="pull-right">
 		                      <div class="col s12">
 		                      <ul class="pagination center-align">';
@@ -191,7 +190,7 @@ CURR;
 		                        echo "<li class='disabled'><a>Next</a></li>";
 		                      }
 		                        echo "</ul></div></div>";
-		                      
+
 
 		                ?>
 					</div>
@@ -214,7 +213,38 @@ CURR;
 		<!-- input mask -->
 		<script src= "../../resources/libraries/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js"></script>
 		<script src= "../../resources/libraries/parsleyjs/dist/parsley.min.js"></script>
+		<!-- NProgress -->
+		<script src="../../resources/libraries/nprogress/nprogress.js"></script>
 		<!-- Custom Theme Scripts -->
+		<script src= "../../assets/js/jquery.easy-autocomplete.js"></script>
+	<script type="text/javascript">
+	      var options = {
+	        url: function(phrase) {
+	          return "../../registrar/studentmanagement/phpscript/student_search.php?query="+phrase;
+	        },
+
+	        getValue: function(element) {
+	          return element.name;
+	        },
+
+	        ajaxSettings: {
+	          dataType: "json",
+	          method: "POST",
+	          data: {
+	            dataType: "json"
+	          }
+	        },
+
+	        preparePostData: function(data) {
+	          data.phrase = $("#search_key").val();
+	          return data;
+	        },
+
+	        requestDelay: 200
+	      };
+
+	      $("#search_key").easyAutocomplete(options);
+	</script>
 		<script src= "../../assets/js/custom.min.js"></script>
 		<script type="text/javascript">
 		$(function() {

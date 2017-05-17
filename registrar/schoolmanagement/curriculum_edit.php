@@ -3,18 +3,10 @@
 <?php include('include_files/session_check.php'); ?>
 <?php
 	$curr_id = $_GET['curr_id'];
-	if(!$conn) {
-		die("Connection failed: " . mysqli_connect_error());
-	}
 	$statement = "SELECT * FROM pcnhsdb.curriculum where curr_id = $curr_id";
-	$result = $conn->query($statement);
-	if(!$result) {
-		header("location: curriculum.php");
-		die();
-	}
-	if ($result->num_rows > 0) {
-		// output data of each row
-		while($row = $result->fetch_assoc()) {
+	$result = DB::query($statement);
+	if (count($result) > 0) {
+		foreach ($result as $row) {
 			$curr_id = $row['curr_id'];
 			$curr_name = $row['curr_name'];
 			$curr_code = $row['curr_code'];
@@ -34,25 +26,28 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		
-		
-		
+
+
+
 		<!-- Bootstrap -->
 		<link href="../../resources/libraries/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 		<!-- Font Awesome -->
 		<link href="../../resources/libraries/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-		
+		<!-- NProgress -->
+		<link href="../../resources/libraries/nprogress/nprogress.css" rel="stylesheet">
 		<!-- Datatables -->
 		<link href="../../resources/libraries/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-		
+
 		<!-- Custom Theme Style -->
 		<link href="../../assets/css/custom.min.css" rel="stylesheet">
 		<link href="../../assets/css/tstheme/style.css" rel="stylesheet">
-		
+		<link href="../../assets/css/customstyle.css" rel="stylesheet">
+		<link href="../../assets/css/easy-autocomplete-topnav.css" rel="stylesheet">
+
 		<!--[if lt IE 9]>
 		<script src="../../js/ie8-responsive-file-warning.js"></script>
 		<![endif]-->
-		
+
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 		<!--[if lt IE 9]>
 		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -69,9 +64,17 @@
 		<div class="right_col" role="main">
 			<div class="">
 				<div class="row top_tiles">
-					
+
 				</div>
 			</div>
+			<!-- Generate Error Message Here  -->
+            <?php
+                if(isset($_SESSION['error_pop'])) {
+                    echo $_SESSION['error_pop'];
+                    unset($_SESSION['error_pop']);
+                }
+            ?>
+            <!--  -->
 			<div class="row">
 				<div class="col-md-12 col-sm-12 col-xs-12">
 					<div class="x_panel">
@@ -141,7 +144,38 @@
 	<!-- input mask -->
 	<script src= "../../resources/libraries/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js"></script>
 	<script src= "../../resources/libraries/parsleyjs/dist/parsley.min.js"></script>
+	<!-- NProgress -->
+	<script src="../../resources/libraries/nprogress/nprogress.js"></script>
 	<!-- Custom Theme Scripts -->
+	<script src= "../../assets/js/jquery.easy-autocomplete.js"></script>
+	<script type="text/javascript">
+	      var options = {
+	        url: function(phrase) {
+	          return "../../registrar/studentmanagement/phpscript/student_search.php?query="+phrase;
+	        },
+
+	        getValue: function(element) {
+	          return element.name;
+	        },
+
+	        ajaxSettings: {
+	          dataType: "json",
+	          method: "POST",
+	          data: {
+	            dataType: "json"
+	          }
+	        },
+
+	        preparePostData: function(data) {
+	          data.phrase = $("#search_key").val();
+	          return data;
+	        },
+
+	        requestDelay: 200
+	      };
+
+	      $("#search_key").easyAutocomplete(options);
+	</script>
 	<script src= "../../assets/js/custom.min.js"></script>
 	<!-- Scripts -->
 	<!-- Parsley -->

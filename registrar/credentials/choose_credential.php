@@ -1,14 +1,30 @@
 <!DOCTYPE html>
 <?php require_once "../../resources/config.php"; ?>
 <?php include('include_files/session_check.php'); ?>
-<?php 
+<?php
 	$stud_id = "";
 	if(isset($_GET['stud_id'])) {
 		$stud_id = htmlspecialchars($_GET['stud_id'], ENT_QUOTES);
 	}else {
 		header("location: ../index.php");
 	}
-	
+
+	$first_name;
+	$last_name;
+	$curriculum;
+	$statement = "SELECT * FROM pcnhsdb.students left join curriculum on students.curr_id = curriculum.curr_id where students.stud_id = '$stud_id' limit 1";
+	$result = DB::query($statement);
+	if (!$result) {
+	//echo "<p>Record Not Found. <a href='../../index.php'>Back to Home</a></p>";
+	header("location: student_list.php");
+	die();
+	}
+	foreach ($result as $row) {
+		$curriculum = $row['curr_name'];
+		$first_name = $row['first_name'];
+		$last_name = $row['last_name'];
+	}
+
 ?>
 <html>
 	<head>
@@ -18,26 +34,28 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		
-		
-		
+
+
+
 		<!-- Bootstrap -->
 		<link href="../../resources/libraries/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 		<!-- Font Awesome -->
 		<link href="../../resources/libraries/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-		
+		<!-- NProgress -->
+		<link href="../../resources/libraries/nprogress/nprogress.css" rel="stylesheet">
 		<!-- Datatables -->
 		<link href="../../resources/libraries/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-		
+
 		<!-- Custom Theme Style -->
 		<link href="../../assets/css/custom.min.css" rel="stylesheet">
 		<link href="../../assets/css/tstheme/style.css" rel="stylesheet">
 		<!-- iCheck -->
 		<link href=".../../../../resources/libraries/iCheck/skins/flat/green.css" rel="stylesheet">
+		<link href="../../assets/css/easy-autocomplete-topnav.css" rel="stylesheet">
 		<!--[if lt IE 9]>
 		<script src="../../js/ie8-responsive-file-warning.js"></script>
 		<![endif]-->
-		
+
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 		<!--[if lt IE 9]>
 		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -54,12 +72,12 @@
 			<form id="choose_cred" class="form-horizontal form-label-left" data-parsley-validate action=<?php echo "generate_cred.php?stud_id=$stud_id" ?> method="GET" >
 				<div class="x_panel">
 					<div class="x_title">
-						<h2>Generate Credential</h2>
-						<ul class="nav navbar-right panel_toolbox">
-							<li><a class="collapse-link"></a>
-						</li>
-					</ul>
+						<h2>Generate Credential
+						</h2>
 					<div class="clearfix"></div>
+					<h5><b>Student ID: </b><?php echo "$stud_id"; ?></h5>
+					<h5><b>Student Name: </b><?php echo "$last_name".', '."$first_name"; ?></h5>
+					<h5><b>Curriculum: </b><?php echo "$curriculum"; ?></h5>
 				</div>
 				<div class="x_content">
 					<div class="item form-group">
@@ -75,19 +93,14 @@
                           <select id="credential" class="form-control" name="credential" required>
 							<option value="">Choose..</option>
 							<?php
-								if(!$conn) {
-									die("Connection failed: " . mysqli_connect_error());
-								}
-								$statement = "SELECT * FROM credentials";
-								$result = $conn->query($statement);
-								if ($result->num_rows > 0) {
-									// output data of each row
-									while($row = $result->fetch_assoc()) {
-										$cred_id = $row['cred_id'];
-										$cred_name = $row['cred_name'];
 
-										echo "<option value='$cred_id'>$cred_name</option>";
-									}
+								$statement = "SELECT * FROM credentials";
+								$result = DB::query($statement);
+								foreach ($result as $row) {
+									$cred_id = $row['cred_id'];
+									$cred_name = $row['cred_name'];
+
+									echo "<option value='$cred_id'>$cred_name</option>";
 								}
 							?>
 							</select>
@@ -97,12 +110,12 @@
 			</div>
 			<div class="row no-print">
 				<div class="col-xs-12">
-					<button type="submit" class="btn btn-success pull-right">Next</button>
+					<button type="submit" class="btn btn-success pull-right submit">Next</button>
 					<a class="btn btn-default pull-right" href=<?php echo "../studentmanagement/student_info.php?stud_id=$stud_id"; ?>>Cancel</a>
 				</div>
 			</div>
 		</form>
-		
+
 	</div>
 	<!-- Contents Here -->
 	<?php include "../../resources/templates/registrar/footer.php"; ?>
@@ -116,7 +129,38 @@
 	<!-- input mask -->
 	<script src= "../../resources/libraries/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js"></script>
 	<script src= "../../resources/libraries/parsleyjs/dist/parsley.min.js"></script>
+	<!-- NProgress -->
+  <script src="../../resources/libraries/nprogress/nprogress.js"></script>
 	<!-- Custom Theme Scripts -->
+	<script src= "../../assets/js/jquery.easy-autocomplete.js"></script>
+	<script type="text/javascript">
+	      var options = {
+	        url: function(phrase) {
+	          return "../../registrar/studentmanagement/phpscript/student_search.php?query="+phrase;
+	        },
+
+	        getValue: function(element) {
+	          return element.name;
+	        },
+
+	        ajaxSettings: {
+	          dataType: "json",
+	          method: "POST",
+	          data: {
+	            dataType: "json"
+	          }
+	        },
+
+	        preparePostData: function(data) {
+	          data.phrase = $("#search_key").val();
+	          return data;
+	        },
+
+	        requestDelay: 200
+	      };
+
+	      $("#search_key").easyAutocomplete(options);
+	</script>
 	<script src= "../../assets/js/custom.min.js"></script>
 	<!-- iCheck -->
 	<script src="../../resources/libraries/iCheck/icheck.min.js"></script>
@@ -127,7 +171,7 @@
 				$.listen('parsley:field:validate', function() {
 				validateFront();
 				});
-				$('#choose_cred .btn').on('click', function() {
+				$('#choose_cred .submit').on('click', function() {
 				$('#choose_cred').parsley().validate();
 				validateFront();
 				});

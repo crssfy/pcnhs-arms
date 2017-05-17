@@ -9,8 +9,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    
+
+
       <!-- jQuery -->
       <script src="../../resources/libraries/jquery/dist/jquery.min.js" ></script>
 
@@ -29,19 +29,20 @@
       <link href="../../resources/libraries/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
       <!-- Font Awesome -->
       <link href="../../resources/libraries/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-      
+
       <!-- Datatables -->
       <link href="../../resources/libraries/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-      
+
       <!-- Custom Theme Style -->
       <link href="../../assets/css/custom.min.css" rel="stylesheet">
        <!-- Custom Theme Style -->
       <link href="../../assets/css/customstyle.css" rel="stylesheet">
-    
+      <link href="../../assets/css/easy-autocomplete-topnav.css" rel="stylesheet">
+
     <!--[if lt IE 9]>
     <script src="../js/ie8-responsive-file-warning.js"></script>
     <![endif]-->
-    
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -66,10 +67,10 @@
               <h2>Verify Student</h2>
               <div class="clearfix"></div>
               <br/>
-              
+
             </div>
             <div class="x_content">
-              
+
               <div class="validate-request">
                 <table class="tablesorter-bootstrap">
                   <thead>
@@ -81,31 +82,33 @@
                     </tr>
                   </thead>
                   <tbody>
-                    
-                    <?php
 
+                    <?php
+                    $others = "";
+                    if(isset($_GET['others']) && $_GET['others'] != "") {
+                        $others = $_GET['others'];
+                      }else {
+                        $others = "";
+                    }
                     $stud_id = "";
                     $cred_id = $_GET['credential'];
                     $purpose = $_GET['purpose'];
-
-
                     if($_GET['full-name']) {
                       $search = htmlspecialchars($_GET['full-name']);
                       $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id where concat(first_name, ' ', last_name) like '$search%'";
 
 
-                      $result = $conn->query($statement);
-                    if ($result->num_rows > 0) {
-                    // output data of each row
-                    while($row = $result->fetch_assoc()) {
+                      $result = DB::query($statement);
+                      if (count($result) > 0) {
+                    		foreach ($result as $row) {
                     $stud_id = $row['stud_id'];
                     $first_name = $row['first_name'];
                     $mid_name = $row['mid_name'];
                     $last_name = $row['last_name'];
                     $gender = $row['gender'];
                     $birth_date = $row['birth_date'];
-                    
-                    
+
+
                     //$yr_grad = $row['yr_grad'];
                     $program = $row['prog_id'];
                     $curriculum = $row['curr_id'];
@@ -119,7 +122,7 @@
                       <td>
                         <span class="">
                         <center>
-                          <a href="../../registrar/credentials/generate_cred.php?stud_id=$stud_id&credential=$cred_id&purpose=$purpose&new_request=true" class="btn btn-default"><i class="fa fa-plus"></i> Add Request</a>
+                          <a href="../../registrar/credentials/generate_cred.php?stud_id=$stud_id&credential=$cred_id&purpose=$purpose&others=$others&new_request=true" class="btn btn-default"><i class="fa fa-plus"></i> Add Request</a>
 
                           <a href="../../registrar/studentmanagement/student_info.php?stud_id=$stud_id" class="btn btn-default"><i class="fa fa-user"></i> View Profile</a>
                           </center>
@@ -132,7 +135,7 @@ STUDLIST;
                     }else {
                       echo "<p>No Result</p>";
                     }
-                    
+
                     ?>
                   </tbody>
                 </table>
@@ -144,7 +147,7 @@ STUDLIST;
     </div>
     <!-- Content End -->
     <?php include "../../resources/templates/registrar/footer.php"; ?>
-    
+
     <!-- Scripts -->
     <!-- Bootstrap -->
     <script src="../../resources/libraries/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -154,6 +157,35 @@ STUDLIST;
     <script src= "../../resources/libraries/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js"></script>
     <script src= "../../resources/libraries/parsleyjs/dist/parsley.min.js"></script>
     <!-- Custom Theme Scripts -->
+    <script src= "../../assets/js/jquery.easy-autocomplete.js"></script>
+  <script type="text/javascript">
+        var options = {
+          url: function(phrase) {
+            return "../../registrar/studentmanagement/phpscript/student_search.php?query="+phrase;
+          },
+
+          getValue: function(element) {
+            return element.name;
+          },
+
+          ajaxSettings: {
+            dataType: "json",
+            method: "POST",
+            data: {
+              dataType: "json"
+            }
+          },
+
+          preparePostData: function(data) {
+            data.phrase = $("#search_key").val();
+            return data;
+          },
+
+          requestDelay: 200
+        };
+
+        $("#search_key").easyAutocomplete(options);
+  </script>
     <script src= "../../assets/js/custom.min.js"></script>
     <!-- NProgress -->
     <script src="../../resources/libraries/nprogress/nprogress.js"></script>

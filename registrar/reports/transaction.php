@@ -4,7 +4,7 @@
     // Session Timeout
     $time = time();
     $session_timeout = 1800; //seconds
-    
+
     if(isset($_SESSION['last_activity']) && ($time - $_SESSION['last_activity']) > $session_timeout) {
       session_unset();
       session_destroy();
@@ -19,7 +19,7 @@
     }else {
     	header('Location: ../../login.php');
     }
-    
+
   ?>
 <!DOCTYPE html>
 <html>
@@ -30,9 +30,9 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		
-		
-		
+
+
+
 		<!-- jQuery -->
 	    <script src="../../resources/libraries/jquery/dist/jquery.min.js" ></script>
 
@@ -53,19 +53,20 @@
 	    <link href="../../resources/libraries/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 	    <!-- Date Range Picker -->
 		<link href="../../resources/libraries/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
-	    
+
 	    <!-- Datatables -->
 	    <link href="../../resources/libraries/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-	    
+
 	    <!-- Custom Theme Style -->
 	    <link href="../../assets/css/custom.min.css" rel="stylesheet">
 	     <!-- Custom Theme Style -->
 	    <link href="../../assets/css/customstyle.css" rel="stylesheet">
-		
+	    <link href="../../assets/css/easy-autocomplete-topnav.css" rel="stylesheet">
+
 		<!--[if lt IE 9]>
 		<script src="../js/ie8-responsive-file-warning.js"></script>
 		<![endif]-->
-		
+
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 		<!--[if lt IE 9]>
 		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -101,7 +102,7 @@
 								Select Date of Transaction
 								<form class="form-horizontal" action="transaction.php" method="get">
 									<fieldset>
-										
+
 										<div class="control-group">
 											<div class="controls">
 												<div class="input-prepend input-group">
@@ -115,7 +116,7 @@
 												</div>
 											</div>
 										</div>
-										
+
 									</fieldset>
 								</form>
 							</div>
@@ -132,9 +133,9 @@
 											<th class="column-title" data-sorter="false">Date Processed</th>
 											<th class="column-title" data-sorter="false">Date Released</th>
 											<th class="column-title" data-sorter="false">Total Amount</th>
-											
+
 										</th>
-										
+
 									</tr>
 								</thead>
 								<tbody>
@@ -142,10 +143,6 @@
 									$statement = "";
 				                    $start=0;
 				                    $limit=20;
-
-				                    if(!$conn) {
-				                    die("Connection failed: " . mysqli_connect_error());
-				                    }
 
 				                    if(isset($_GET['page'])){
 				                      $page=$_GET['page'];
@@ -181,15 +178,35 @@
 
 				                    	$statement = "SELECT * FROM pcnhsdb.students natural join requests natural join transaction natural join credentials where trans_date between '$from' and '$to' limit $start, $limit;";
 				                    }else {
-				                    	$transaction_date = date('m/d/y').'-'.date('m/d/y');
-				                    	$statement = "SELECT * FROM pcnhsdb.students natural join requests natural join transaction natural join credentials limit $start, $limit";
+				                    	$transaction_date = date('m/01/y').'-'.date('m/d/y');
+				                    	$from_and_to_date = explode("-", $transaction_date);
+				                    	$sqldate_format_from = explode("/", $from_and_to_date[0]);
+										$m = $sqldate_format_from[0];
+										$d = $sqldate_format_from[1];
+										$y = $sqldate_format_from[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+
+										$from = $y."-".$m."-".$d;
+
+										$sqldate_format_to = explode("/", $from_and_to_date[1]);
+										$m = $sqldate_format_to[0];
+										$d = $sqldate_format_to[1];
+										$y = $sqldate_format_to[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+
+										$to = $y."-".$m."-".$d;
+
+				                    	$statement = "SELECT * FROM pcnhsdb.students natural join requests natural join transaction natural join credentials where trans_date between '$from' and '$to' limit $start, $limit";
 				                    }
 
 
-				                    $result = $conn->query($statement);
-					                if ($result->num_rows > 0) {
-					                    // output data of each row
-					                    while($row = $result->fetch_assoc()) {
+				                    $result = DB::query($statement);
+                            if (count($result) > 0) {
+                          		foreach ($result as $row) {
 					                    	$transaction_date = $row['trans_date'];
 					                    	$student = $row['first_name']." ".$row['last_name'];
 					                    	$credential = $row['cred_name'];
@@ -206,15 +223,15 @@
 												<td class=" ">$total_trans_amt</td>
 											</tr>
 TRANS;
-					                    	
+
 
 					                    }
 					                }
 
-				                    
+
 
 								?>
-									
+
 								</tbody>
 							</table>
 							<?php
@@ -243,11 +260,32 @@ TRANS;
 
 				                    	$statement = "SELECT * FROM pcnhsdb.students natural join requests natural join transaction natural join credentials where trans_date between '$from' and '$to';";
 				                    }else {
-				                    	$transaction_date = date('m/d/y').'-'.date('m/d/y');
-				                    	$statement = "SELECT * FROM pcnhsdb.students natural join requests natural join transaction natural join credentials";
+				                    	$transaction_date = date('m/01/y').'-'.date('m/d/y');
+				                    	$from_and_to_date = explode("-", $transaction_date);
+				                    	$sqldate_format_from = explode("/", $from_and_to_date[0]);
+										$m = $sqldate_format_from[0];
+										$d = $sqldate_format_from[1];
+										$y = $sqldate_format_from[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+
+										$from = $y."-".$m."-".$d;
+
+										$sqldate_format_to = explode("/", $from_and_to_date[1]);
+										$m = $sqldate_format_to[0];
+										$d = $sqldate_format_to[1];
+										$y = $sqldate_format_to[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+
+										$to = $y."-".$m."-".$d;
+				                    	$statement = "SELECT * FROM pcnhsdb.students natural join requests natural join transaction natural join credentials where trans_date between '$from' and '$to'";
 				                    }
-							
-							$rows = mysqli_num_rows(mysqli_query($conn, $statement));
+
+			              	$result = DB::query($statement);
+			              	$rows = count($result);
 							$total = ceil($rows/$limit);
 							echo '<div class="pull-right">
 									<div class="col s12">
@@ -274,7 +312,7 @@ TRANS;
 													echo "<li class='disabled'><a>Next</a></li>";
 													}
 											echo "</ul></div></div>";
-											
+
 									?>
 						</div>
 					</div>
@@ -294,9 +332,11 @@ TRANS;
 		<!-- Date Range Picker -->
 		<script src="../../resources/libraries/moment/min/moment.min.js"></script>
 		<script src="../../resources/libraries/bootstrap-daterangepicker/daterangepicker.js"></script>
-		
+    <!-- NProgress -->
+		<script src="../../resources/libraries/nprogress/nprogress.js"></script>
 		<script src= "../../resources/libraries/parsleyjs/dist/parsley.min.js"></script>
 		<!-- Custom Theme Scripts -->
+		<script src= "../../assets/js/jquery.easy-autocomplete.js"></script>
 		<script src= "../../assets/js/custom.js"></script>
 		<script type="text/javascript">
 			$('#transaction_date').daterangepicker({
@@ -324,6 +364,34 @@ TRANS;
 		});
 		});
 		</script>
+		<script type="text/javascript">
+	      var options = {
+	        url: function(phrase) {
+	          return "../../registrar/studentmanagement/phpscript/student_search.php?query="+phrase;
+	        },
+
+	        getValue: function(element) {
+	          return element.name;
+	        },
+
+	        ajaxSettings: {
+	          dataType: "json",
+	          method: "POST",
+	          data: {
+	            dataType: "json"
+	          }
+	        },
+
+	        preparePostData: function(data) {
+	          data.phrase = $("#search_key").val();
+	          return data;
+	        },
+
+	        requestDelay: 200
+	      };
+
+	      $("#search_key").easyAutocomplete(options);
+	</script>
 	<!-- Scripts -->
 </body>
 </html>

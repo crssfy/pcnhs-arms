@@ -1,12 +1,28 @@
 <?php require_once "../../resources/config.php"; ?>
 <?php include('include_files/session_check.php'); ?>
 <? unset($_SESSION['grade']); ?>
-<?php 
+<?php
 	if(isset($_GET['stud_id']) && isset($_GET['yr_level'])) {
 		$stud_id = $_GET['stud_id'];
 		$yr_level = $_GET['yr_level'];
 	}else {
 		header("location: student_list.php");
+	}
+
+	$first_name;
+	$last_name;
+	$curriculum;
+	$statement = "SELECT * FROM pcnhsdb.students left join curriculum on students.curr_id = curriculum.curr_id where students.stud_id = '$stud_id' limit 1";
+	$result = DB::query($statement);
+	if (count($result) > 0) {
+		foreach ($result as $row) {
+		$curriculum = $row['curr_name'];
+		$first_name = $row['first_name'];
+		$last_name = $row['last_name'];
+		}
+	}else {
+		header("location: student_list.php");
+		die();
 	}
 ?>
 <!DOCTYPE html>
@@ -18,8 +34,8 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		
-		
+
+
 		<!-- jQuery -->
 	    <script src="../../resources/libraries/jquery/dist/jquery.min.js" ></script>
 
@@ -38,19 +54,20 @@
 	    <link href="../../resources/libraries/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 	    <!-- Font Awesome -->
 	    <link href="../../resources/libraries/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-	    
+
 	    <!-- Datatables -->
 	    <link href="../../resources/libraries/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-	    
+
 	    <!-- Custom Theme Style -->
 	    <link href="../../assets/css/custom.min.css" rel="stylesheet">
 	     <!-- Custom Theme Style -->
 	    <link href="../../assets/css/customstyle.css" rel="stylesheet">
-		
+	    <link href="../../assets/css/easy-autocomplete-topnav.css" rel="stylesheet">
+
 		<!--[if lt IE 9]>
 		<script src="../js/ie8-responsive-file-warning.js"></script>
 		<![endif]-->
-		
+
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 		<!--[if lt IE 9]>
 		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -68,21 +85,24 @@
 					<li><a href="../index.php">Home</a></li>
 					<li><a href="#">Student Management</a></li>
 					<li><a href="student_list.php">Student List</a></li>
-					<li><a href="#">Student Personal Information</a></li>
-					<li><a href="#">Grades</a></li>
+					<li><a href="#">Student Record</a></li>
 					<li class="active">Subject Grades</li>
 				</ol>
 			</div>
 			<div class="row">
 				<div class="col-md-9">
-					<a class="btn btn-default" href=<?php echo "../studentmanagement/grades.php?stud_id=$stud_id"; ?>><i class="fa fa-arrow-circle-left"></i> Back</a>
+					<a class="btn btn-default" href=<?php echo "../studentmanagement/student_info.php?stud_id=$stud_id"; ?>><i class="fa fa-arrow-circle-left"></i> Back</a>
 				</div>
 			</div>
 			<div class="clearfix"></div>
 						<div class="x_panel">
 				<div class="x_title">
-					<h2>Subject Grades</h2>
+					<h2>Subject Grades
+					</h2>
 					<div class="clearfix"></div>
+					<h5><b>Student ID: </b><?php echo "$stud_id"; ?></h5>
+					<h5><b>Student Name: </b><?php echo "$last_name".', '."$first_name"; ?></h5>
+					<h5><b>Curriculum: </b><?php echo "$curriculum"; ?></h5>
 				</div>
 				<div class="x_content">
 					<table class="tablesorter-bootstrap">
@@ -99,14 +119,10 @@
 		                </thead>
 		                <tbody>
 		                      	<?php
-									if(!$conn) {
-										die("Connection failed: " . mysqli_connect_error());
-									}
 									$query = "SELECT studsubj_id, special_grade, subj_name, subj_level, fin_grade, studentsubjects.credit_earned, comment FROM pcnhsdb.studentsubjects left join subjects on studentsubjects.subj_id = subjects.subj_id where yr_level = '$yr_level' and stud_id = '$stud_id';";
-									$result = $conn->query($query);
-									if ($result->num_rows > 0) {
-										// output data of each row
-										while($row = $result->fetch_assoc()) {
+									$result = DB::query($query);
+									if (count($result) > 0) {
+										foreach ($result as $row) {
 											$studsubj_id = $row['studsubj_id'];
 											$subj_name = $row['subj_name'];
 											$subj_level = $row['subj_level'];
@@ -133,10 +149,10 @@
 YR1;
 										}
 									}
-									
+
 
 								?>
-		                        
+
 		            	</tbody>
 		        	</table>
 				</div>
@@ -154,6 +170,41 @@ YR1;
 		<!-- NProgress -->
 		<script src="../../resources/libraries/nprogress/nprogress.js"></script>
 		<!-- Custom Theme Scripts -->
+		<script src= "../../assets/js/jquery.easy-autocomplete.js"></script>
+				<script type="text/javascript">
+			      $(function() {
+			      $('.recent-request').tablesorter();
+			      $('.tablesorter-bootstrap').tablesorter({
+			      theme : 'bootstrap',
+			      headerTemplate: '{content} {icon}',
+			      widgets    : ['zebra','columns', 'uitheme']
+			      });
+			      });
+			    </script>
+				<!-- Scripts -->
+				<script type="text/javascript">
+				var options = {
+				url: function(phrase) {
+				return "phpscript/student_search.php?query="+phrase;
+				},
+				getValue: function(element) {
+				return element.name;
+				},
+				ajaxSettings: {
+				dataType: "json",
+				method: "POST",
+				data: {
+				dataType: "json"
+				}
+				},
+				preparePostData: function(data) {
+				data.phrase = $("#search_key").val();
+				return data;
+				},
+				requestDelay: 200
+				};
+				$("#search_key").easyAutocomplete(options);
+				</script>
 		<script src= "../../assets/js/custom.min.js"></script>
 		<script type="text/javascript">
 	      $(function() {

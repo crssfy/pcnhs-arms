@@ -8,13 +8,38 @@
     $personnel_id = htmlspecialchars($_SESSION['per_id'], ENT_QUOTES);
     $date = htmlspecialchars($_POST['date'], ENT_QUOTES);
     $request_purpose = strtoupper(htmlspecialchars($_POST['request_purpose']));
-    if(!$conn) {
+    $admitted_to = "N/A";
+
+    $checkpending = "SELECT * FROM pcnhsdb.requests where status = 'p' and stud_id = '$stud_id' and cred_id = '$cred_id' order by req_id desc limit 1;";
+    $result = DB::query($checkpending);
+    if (count($result) > 0) {
+      foreach ($result as $row) {
+            $req_id = $row['req_id'];
+            DB::update('requests', array(
+              'request_type' => $request_type,
+              'status' => 'u',
+              'admitted_to' => $admitted_to
+            ), "req_id=%i", $req_id);
+            header("location: ../unclaimed.php");
+            die();
+        }
+    }else {
+        DB::insert('requests', array(
+          'cred_id' => $cred_id,
+          'stud_id' => $stud_id,
+          'request_type' => $request_type,
+          'status' => 'u',
+          'date_processed' => $date,
+          'admitted_to' => $admitted_to,
+          'request_purpose' => $request_purpose,
+          'sign_id' => '',
+          'per_id' => $personnel_id
+        ));
+
+        header("location: ../unclaimed.php");
         die();
     }
-	$statement1 = "INSERT INTO `pcnhsdb`.`requests` (`cred_id`, `stud_id`, `request_type`, `status`, `date_processed`, `request_purpose`,  `per_id`) VALUES ('$cred_id', '$stud_id', '$request_type', 'u', '$date', '$request_purpose', '$personnel_id');";
 
-    mysqli_query($conn, $statement1);
 
-    header("location: ../unclaimed.php")
 
 ?>
