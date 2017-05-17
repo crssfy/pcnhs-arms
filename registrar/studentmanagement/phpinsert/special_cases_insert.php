@@ -57,5 +57,8 @@
 	}
 	if($inserted) {
 		header("location: ../student_info.php?stud_id=$stud_id");
+	}else {
+		header("Location: " . $_SERVER["HTTP_REFERER"]);
+        die();
 	}
 ?>
