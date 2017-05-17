@@ -51,7 +51,7 @@
 ?>
 
 
-<!-- Validations -->
+<!-- Validations End -->
 <html>
     <head>
         <title>Add Student Grades</title>
