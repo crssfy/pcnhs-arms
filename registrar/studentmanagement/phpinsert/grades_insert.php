@@ -227,9 +227,29 @@
 				unset($_SESSION['credits']);
 				unset($_SESSION['save-type']);
 				DB::query($insertaverage);
+				
+			    //USER LOGS
+			    date_default_timezone_set('Asia/Manila');
+			    $act_msg= "ADDED GRADES OF : $stud_id - $yr_level";
+			    $username = $_SESSION['username'];
+				$currTime = date("h:i:s A");
+			    $log_id = null;
+			    $currDate = date("Y-m-d");
+			    $accnt_type = $_SESSION['accnt_type'];
+
+			    DB::insert('user_logs', array(
+			              'log_id' => $log_id,
+			              'user_name' => $username,
+			              'time' => $currTime,
+			              'log_date' => $currDate,
+			              'account_type' => $accnt_type,
+			              'user_act' => $act_msg,
+			    ));
+
+
 				echo "<p>Updating Database, please wait...</p>";
 				header("refresh:3;url=../student_info.php?stud_id=$stud_id");
-				//$_SESSION['user_activity'][] = "ADDED NEW GRADES: $stud_id - $yr_level";
+				
 			}
 		}
 	}

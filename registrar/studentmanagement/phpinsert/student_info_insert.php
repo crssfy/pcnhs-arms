@@ -110,15 +110,31 @@
 			'total_elem_years' => $total_elem_years,
 			'gen_average' => $gpa
 		));
-// Generate Success Popover
+	// Generate Success Popover
 		$alert_type = "success";
 		$message = "Added Student Successfully.";
 		$popover = new Popover();
 		$popover->set_popover($alert_type, $message);
 		$_SESSION['success'] = $popover->get_popover();
-		echo "<p>Fatal error occured, please logout.</p><a href='../../../logout.php'> Logout</a>";
-		echo "<br>";
-		$_SESSION['user_activity'][] = "ADDED NEW STUDENT: $first_name $last_name";
+
+
+    //USER LOGS
+    date_default_timezone_set('Asia/Manila');
+    $act_msg= "ADDED STUDENT RECORD OF: $stud_id - $first_name $mid_name $last_name";
+    $username = $_SESSION['username'];
+	$currTime = date("h:i:s A");
+    $log_id = null;
+    $currDate = date("Y-m-d");
+    $accnt_type = $_SESSION['accnt_type'];
+
+    DB::insert('user_logs', array(
+              'log_id' => $log_id,
+              'user_name' => $username,
+              'time' => $currTime,
+              'log_date' => $currDate,
+              'account_type' => $accnt_type,
+              'user_act' => $act_msg,
+    ));
 
 		header("Location: ../student_info.php?stud_id=$stud_id");
 	}

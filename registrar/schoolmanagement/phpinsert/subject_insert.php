@@ -109,8 +109,24 @@
 		}
 
 			$subj_id+=1;
-			$_SESSION['user_activity'][] = "ADDED NEW SUBJECT: $subj_name";
+	
+	//USER LOGS
+    date_default_timezone_set('Asia/Manila');
+    $act_msg= "ADDED SUBJECT : $subj_id - $subj_name";
+    $username = $_SESSION['username'];
+	$currTime = date("h:i:s A");
+    $log_id = null;
+    $currDate = date("Y-m-d");
+    $accnt_type = $_SESSION['accnt_type'];
 
+    DB::insert('user_logs', array(
+              'log_id' => $log_id,
+              'user_name' => $username,
+              'time' => $currTime,
+              'log_date' => $currDate,
+              'account_type' => $accnt_type,
+              'user_act' => $act_msg,
+    ));
 	}
 
 	// $subj_name = htmlspecialchars(filter_var($_POST['subj_name'], FILTER_SANITIZE_STRING), ENT_QUOTES, 'UTF-8');
