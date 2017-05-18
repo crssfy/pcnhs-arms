@@ -37,7 +37,7 @@
         die();
     }
 
-    $checkgrade = "SELECT * from pcnhsdb.grades where stud_id = '$stud_id' AND yr_level = $yr_level";
+    $checkgrade = "SELECT * from pcnhsdb.grades where stud_id = '$stud_id' AND yr_level = $yr_level and remarks is null;";
     $result = DB::query($checkgrade);
     if (count($result) > 0) {
         $alert_type = "danger";

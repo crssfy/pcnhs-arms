@@ -51,7 +51,7 @@
 				}
 			}
 
-			$checkgrade = "SELECT * from pcnhsdb.grades where stud_id = '$stud_id' AND yr_level = '$yr_level'";
+			$checkgrade = "SELECT * from pcnhsdb.grades where stud_id = '$stud_id' AND yr_level = '$yr_level' and remarks is null";
 		    $result = DB::query($checkgrade);
 				if (count($result) > 0) {
 		        $alert_type = "danger";
@@ -59,7 +59,7 @@
 		        $popover = new Popover();
 		        $popover->set_popover($alert_type, $error_message);
 		        $_SESSION['hasgrades'] = $popover->get_popover();
-		        header("location: student_info.php?stud_id=".$stud_id);
+		        header("location: ../student_info.php?stud_id=".$stud_id);
 		        die();
 		    }
 //

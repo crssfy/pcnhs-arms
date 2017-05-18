@@ -369,6 +369,7 @@ foreach ($result as $row) {
 																			$result = DB::query($statement);
 																			$result_count = count($result);
 																			$grade_count = 0;
+
 																			foreach ($result as $row) {
 																			  $grade_count += 1;
 																			  $schl_name = $row['schl_name'];
@@ -377,6 +378,10 @@ foreach ($result as $row) {
 																			  $average_grade = $row['average_grade'];
 																			  $average_grade = number_format($average_grade, 2);
 																			  $remarks = $row['remarks'];
+																			  if($remarks == "DROPPED" || $remarks == "REPEATER") {
+																				$repeat_year = true;
+																				$result_count -= 1;
+																			}
 																			  $total_credit = $row['total_credit'];
 																			  echo <<<GRADES
 																			    <tr>
@@ -554,7 +559,8 @@ YR1;
 																		// href=phpupdate/removeothersubjects.php?stud_id=$stud_id&yr_level=$yr_level
 																		// will check if this subject is existing in the other subjects
 																		$query_othersubj = "SELECT * FROM pcnhsdb.othersubjects where stud_id = '$stud_id' AND subj_id = '$subj_id' and comment = 'PASSED';";
-																		$count_othersubj = DB::count($query_othersubj);
+																		$result = DB::query($query_othersubj);
+																		$count_othersubj = count($result);
 																		if ($count_othersubj > 0) {
 																			$status = "PASSED";
 																			$action = "<a class='btn btn-primary btn-xs disabled'>Add to Other Subjects</a>";
@@ -664,7 +670,7 @@ REMOVE;
 															$year_check = $attendance_count+1;
 														}
 
-														$checkgrade = "SELECT * FROM pcnhsdb.grades where stud_id = '$stud_id' and yr_level = $year_check;";
+														$checkgrade = "SELECT * FROM pcnhsdb.grades where stud_id = '$stud_id' and yr_level = $year_check and ((remarks != 'DROPPED' and remarks != 'REPEATER') or remarks is null);";
 														$result = DB::query($checkgrade);
 														$result_checkgrade = count($result);
 														if($result_checkgrade > 0) {
