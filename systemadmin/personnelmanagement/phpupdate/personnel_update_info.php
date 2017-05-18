@@ -30,11 +30,27 @@ if (count($resultCheckPw) > 0) {
         $verifypw = Bcrypt::checkPassword($password, $row['password']);
         if ($verifypw == TRUE) {
             $updatestmnt = "UPDATE `pcnhsdb`.`personnel`
-                                    SET `uname`='$uname', `last_name`='$last_name', `first_name`='$first_name', `mname`='$mname', `position`='$position', `access_type` = '$access_type',`accnt_status`='$accnt_status'
-                                    WHERE personnel.per_id = '$per_id'";
+                            SET `uname`='$uname', `last_name`='$last_name', `first_name`='$first_name', `mname`='$mname', `position`='$position', `access_type` = '$access_type',`accnt_status`='$accnt_status'
+                            WHERE personnel.per_id = '$per_id'";
             DB::query($updatestmnt);
-            $per_edit = "EDITED PERSONNEL ACCOUNT: $per_id";
-            $_SESSION['user_activity'][] = $per_edit;
+
+            //USER LOGS
+            date_default_timezone_set('Asia/Manila');
+            $per_act_msg= "EDITED PERSONNEL ACCOUNT : $per_id";
+            $username = $_SESSION['username'];
+            $currTime = date("h:i:s A");
+            $log_id = null;
+            $currDate = date("Y-m-d");
+            $accnt_type = $_SESSION['accnt_type'];
+
+            DB::insert('user_logs', array(
+              'log_id' => $log_id,
+              'user_name' => $username,
+              'time' => $currTime,
+              'log_date' => $currDate,
+              'account_type' => $accnt_type,
+              'user_act' => $per_act_msg,
+            ));
 
             $alert_type = "info";
             $message = "Personnel Account Information Edited Successfully";

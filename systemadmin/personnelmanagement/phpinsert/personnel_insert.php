@@ -69,8 +69,23 @@ else {
       'accnt_status' => $accnt_status
     ));
 
-    $per_add = "ADDED PERSONNEL ACCOUNT: $per_id";
-    $_SESSION['user_activity'][] = $per_add;
+    //USER LOGS
+    date_default_timezone_set('Asia/Manila');
+    $per_act_msg= "ADDED PERSONNEL ACCOUNT : $per_id";
+    $username = $_SESSION['username'];
+    $currTime = date("h:i:s A");
+    $log_id = null;
+    $currDate = date("Y-m-d");
+    $accnt_type = $_SESSION['accnt_type'];
+
+    DB::insert('user_logs', array(
+      'log_id' => $log_id,
+      'user_name' => $username,
+      'time' => $currTime,
+      'log_date' => $currDate,
+      'account_type' => $accnt_type,
+      'user_act' => $per_act_msg,
+    ));
 
     $alert_type = "success";
     $message = "Personnel $uname Added Successfully";

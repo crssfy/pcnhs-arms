@@ -1,6 +1,7 @@
 <?php require_once '../resources/config.php' ?>
+<?php include 'entry/backup_notif.php';?>
 <?php
-session_start();
+//session_start();
 // Session Timeout
 $time = time();
 $session_timeout = 1800; //seconds
@@ -95,7 +96,13 @@ else {
                <h2><i class="fa fa-tasks"> </i> User Activity Logs</h2>
               <ul class="nav navbar-right panel_toolbox">
               </ul>
-              <div class="clearfix"></div>
+              <div class="clearfix"></div><br>
+                            <?php
+                                if(isset($_SESSION['backup_notif'])) {
+                                   echo $_SESSION['backup_notif'];
+                                   unset($_SESSION['backup_notif']);
+                                  }
+                                ?>
             </div>
 
             <div class="row">
@@ -145,12 +152,11 @@ else {
                         <thead>
                             <tr>
                                 <th>Log ID</th>
-                                <th>Date</th>
                                 <th>Username</th>
-                                <th>Access Type</th>
-                                <th>Login Time</th>
+                                <th>Date </th>
+                                <th>Time</th>
                                 <th>User Activity</th>
-                                <th>Logout Time</th>
+                                <th>Access Type</th>
                             </tr>
                             </thead>
                             <tbody>
