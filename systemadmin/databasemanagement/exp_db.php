@@ -49,7 +49,6 @@
           <div class="col-md-5">
             <ol class="breadcrumb">
               <li><a href="../index.php">Home</a></li>
-              <li class="disabled">Database Management</li>
               <li class="disabled">Generate Backup</li>
             </ol>
           </div>
@@ -61,7 +60,7 @@
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_title">
-                    <h2><i class="fa fa-database"></i> Database Management<br><br>
+                    <h2><i class="fa fa-database"></i> Backup Database<br><br>
                         <a href = "phpscript/exp.php" class="btn btn-success btn-lg"><i class="fa fa-save"></i> Generate Backup</a>
                     </h2>
 
