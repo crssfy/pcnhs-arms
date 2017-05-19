@@ -9,18 +9,16 @@ if (count($statement_res) > 0) {
         $user_name = $row['user_name'];
         $account_type = $row['account_type'];
         $log_date = $row['log_date'];
-        $log_in_time = $row['log_in_time'];
-        $log_out_time = $row['log_out_time'];
+        $time = $row['time'];
         $user_act = $row['user_act'];
         echo <<<LOGLIST
                                             <tr class="odd pointer">
                                                         <td class=" ">$log_id</td>
-                                                        <td class=" ">$log_date</td>
                                                         <td class=" ">$user_name</td>
-                                                        <td class=" ">$account_type</td>
-                                                        <td class=" ">$log_in_time</td>
+                                                        <td class=" ">$log_date</td>
+                                                        <td class=" ">$time</td>
                                                         <td class=" ">$user_act</td>
-                                                        <td class=" ">$log_out_time</td>
+                                                        <td class=" ">$account_type</td>
                                             </tr>
 LOGLIST;
     }
