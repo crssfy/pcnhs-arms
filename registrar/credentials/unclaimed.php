@@ -75,7 +75,7 @@
 							<div class="clearfix"></div>
 						</div>
 						<div class="x_content">
-							<!-- Date Picker -->
+						<!-- Date Picker -->
 						<div class="row">
 							<div class="col-md-4">
 								Select Date
@@ -261,7 +261,35 @@ UNCLAIMED;
 							$result = DB::query($statement);
 							$rows = count($result);
 							$total = ceil($rows/$limit);
-							echo '<div class="pull-right">
+							if(isset($_GET['unclaimed_date'])) {
+								$unclaimed_date = $_GET['unclaimed_date'];
+								echo '<div class="pull-right">
+									<div class="col s12">
+											<ul class="pagination center-align">';
+													if($page > 1) {
+													echo "<li class=''><a href='unclaimed.php?unclaimed_date=$unclaimed_date&page=".($page-1)."'>Previous</a></li>";
+													}else if($total <= 0) {
+													echo '<li class="disabled"><a>Previous</a></li>';
+													}else {
+													echo '<li class="disabled"><a>Previous</a></li>';
+													}
+													for($i = 1;$i <= $total; $i++) {
+													if($i==$page) {
+													echo "<li class='active'><a href='unclaimed.php?unclaimed_date=$unclaimed_date&page=$i'>$i</a></li>";
+													} else {
+													echo "<li class=''><a href='unclaimed.php?unclaimed_date=$unclaimed_date&page=$i'>$i</a></li>";
+													}
+													}
+													if($total == 0) {
+													echo "<li class='disabled'><a>Next</a></li>";
+													}else if($page!=$total) {
+													echo "<li class=''><a href='unclaimed.php?unclaimed_date=$unclaimed_date&page=".($page+1)."'>Next</a></li>";
+													}else {
+													echo "<li class='disabled'><a>Next</a></li>";
+													}
+											echo "</ul></div></div>";
+										}else {
+											echo '<div class="pull-right">
 									<div class="col s12">
 											<ul class="pagination center-align">';
 													if($page > 1) {
@@ -286,6 +314,7 @@ UNCLAIMED;
 													echo "<li class='disabled'><a>Next</a></li>";
 													}
 											echo "</ul></div></div>";
+										}
 
 									?>
 								</div>
