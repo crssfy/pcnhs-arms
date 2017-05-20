@@ -191,6 +191,16 @@
                     </div>
                   </form>
                 </div>
+                <div class="col-md-3">
+                  <form class="form-horizontal form-label-left">
+                    <div class="input-group" class="col-md-9">
+                      <input type="text" class="form-control">
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-primary">Go!</button>
+                      </span>
+                    </div>
+                  </form>
+                </div>
               </div>
               <?php
                 if(isset($_GET['search_key'])) {

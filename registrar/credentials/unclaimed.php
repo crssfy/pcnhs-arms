@@ -30,7 +30,8 @@
 	    <link href="../../resources/libraries/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 	    <!-- Font Awesome -->
 	    <link href="../../resources/libraries/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-
+	     <!-- Date Range Picker -->
+		<link href="../../resources/libraries/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
 	    <!-- Datatables -->
 	    <link href="../../resources/libraries/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
 
@@ -74,6 +75,48 @@
 							<div class="clearfix"></div>
 						</div>
 						<div class="x_content">
+							<!-- Date Picker -->
+						<div class="row">
+							<div class="col-md-4">
+								Select Date
+								<form class="form-horizontal" action="unclaimed.php" method="get">
+									<fieldset>
+
+										<div class="control-group">
+											<div class="controls">
+												<div class="input-prepend input-group">
+													<span class="add-on input-group-addon">
+														<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+													</span>
+													<input type="text" name="unclaimed_date" id="unclaimed_date" class="form-control" value=" " />
+													<span class="input-group-btn">
+														<button type="submit" class="btn btn-primary">Go</button>
+													</span>
+												</div>
+											</div>
+										</div>
+
+									</fieldset>
+								</form>
+							</div>
+							<br>
+							<?php
+									$unclaimed_date = "";
+									if(isset($_GET['unclaimed_date'])) {
+										$unclaimed_date = $_GET['unclaimed_date'];
+										$unclaimed_date = preg_replace('/\s+/', '', $unclaimed_date);
+
+									}else {
+										$date_from = date("m/01/Y");
+										$date_to = date("m/d/Y");
+										$unclaimed_date = $date_from.' - '.$date_to;
+										$unclaimed_date = preg_replace('/\s+/', '', $unclaimed_date);
+									}
+
+
+								?>
+						</div>
+	                      <!-- Date Picker -->
 							<div class="unclaimed-list">
 								<table class="tablesorter-bootstrap">
 									<thead>
@@ -83,7 +126,6 @@
 											<th class="column-title" data-sorter="false">Requested Credential</th>
 											<th class="column-title no-link last" data-sorter="false"><span class="nobr">Mark as</span>
 										</th>
-
 									</tr>
 								</thead>
 								<tbody>
@@ -97,7 +139,50 @@
 										}else{
 										$page=1;
 										}
-										$statement = "SELECT req_id, stud_id, date_processed as 'date processed', concat(first_name, ' ', last_name) as 'stud_name', cred_id, cred_name, request_type FROM pcnhsdb.requests natural join students natural join credentials where status='u' order by date_processed desc limit $start, $limit;";
+										if(isset($_GET['unclaimed_date'])) {
+				                    	$unclaimed_date = $_GET['unclaimed_date'];
+				                    	$from_and_to_date = explode("-", $unclaimed_date);
+				                    	$sqldate_format_from = explode("/", $from_and_to_date[0]);
+										$m = $sqldate_format_from[0];
+										$d = $sqldate_format_from[1];
+										$y = $sqldate_format_from[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$from = $y."-".$m."-".$d;
+										$sqldate_format_to = explode("/", $from_and_to_date[1]);
+										$m = $sqldate_format_to[0];
+										$d = $sqldate_format_to[1];
+										$y = $sqldate_format_to[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$to = $y."-".$m."-".$d;
+
+
+
+				                    	$statement = "SELECT req_id, stud_id, date_processed as 'date processed', concat(first_name, ' ', last_name) as 'stud_name', cred_id, cred_name, request_type FROM pcnhsdb.requests natural join students natural join credentials where status='u' and date_processed between '$from' and '$to' order by date_processed desc limit $start, $limit;";
+				                    }else {
+				                    	$unclaimed_date = date('m/01/y').'-'.date('m/d/y');
+				                    	$from_and_to_date = explode("-", $unclaimed_date);
+				                    	$sqldate_format_from = explode("/", $from_and_to_date[0]);
+										$m = $sqldate_format_from[0];
+										$d = $sqldate_format_from[1];
+										$y = $sqldate_format_from[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$from = $y."-".$m."-".$d;
+										$sqldate_format_to = explode("/", $from_and_to_date[1]);
+										$m = $sqldate_format_to[0];
+										$d = $sqldate_format_to[1];
+										$y = $sqldate_format_to[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$to = $y."-".$m."-".$d;
+				                    	$statement = "SELECT req_id, stud_id, date_processed as 'date processed', concat(first_name, ' ', last_name) as 'stud_name', cred_id, cred_name, request_type FROM pcnhsdb.requests natural join students natural join credentials where status='u' order by date_processed desc limit $start, $limit;";
+				                    }
 										$result = DB::query($statement);
 										if (count($result) > 0) {
 											foreach ($result as $row) {
@@ -128,7 +213,50 @@ UNCLAIMED;
 								</tbody>
 							</table>
 							<?php
-							$statement = "SELECT req_id, stud_id, date_processed as 'date processed', concat(first_name, ' ', last_name) as 'stud_name', cred_name FROM pcnhsdb.requests natural join students natural join credentials where status='u' order by date_processed desc;";
+							if(isset($_GET['unclaimed_date'])) {
+				                    	$unclaimed_date = $_GET['unclaimed_date'];
+				                    	$from_and_to_date = explode("-", $unclaimed_date);
+				                    	$sqldate_format_from = explode("/", $from_and_to_date[0]);
+										$m = $sqldate_format_from[0];
+										$d = $sqldate_format_from[1];
+										$y = $sqldate_format_from[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$from = $y."-".$m."-".$d;
+										$sqldate_format_to = explode("/", $from_and_to_date[1]);
+										$m = $sqldate_format_to[0];
+										$d = $sqldate_format_to[1];
+										$y = $sqldate_format_to[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$to = $y."-".$m."-".$d;
+
+
+
+				                    	$statement = "SELECT req_id, stud_id, date_processed as 'date processed', concat(first_name, ' ', last_name) as 'stud_name', cred_id, cred_name, request_type FROM pcnhsdb.requests natural join students natural join credentials where status='u' and date_processed between '$from' and '$to' order by date_processed desc;";
+				                    }else {
+				                    	$unclaimed_date = date('m/01/y').'-'.date('m/d/y');
+				                    	$from_and_to_date = explode("-", $unclaimed_date);
+				                    	$sqldate_format_from = explode("/", $from_and_to_date[0]);
+										$m = $sqldate_format_from[0];
+										$d = $sqldate_format_from[1];
+										$y = $sqldate_format_from[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$from = $y."-".$m."-".$d;
+										$sqldate_format_to = explode("/", $from_and_to_date[1]);
+										$m = $sqldate_format_to[0];
+										$d = $sqldate_format_to[1];
+										$y = $sqldate_format_to[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$to = $y."-".$m."-".$d;
+				                    	$statement = "SELECT req_id, stud_id, date_processed as 'date processed', concat(first_name, ' ', last_name) as 'stud_name', cred_id, cred_name, request_type FROM pcnhsdb.requests natural join students natural join credentials where status='u' order by date_processed desc;";
+				                    }
 
 							$result = DB::query($statement);
 							$rows = count($result);
@@ -177,11 +305,30 @@ UNCLAIMED;
 			<script src= "../../resources/libraries/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js"></script>
 			<script src= "../../resources/libraries/parsleyjs/dist/parsley.min.js"></script>
 			<!-- NProgress -->
+			<!-- Date Range Picker -->
+			<script src="../../resources/libraries/moment/min/moment.min.js"></script>
+			<script src="../../resources/libraries/bootstrap-daterangepicker/daterangepicker.js"></script>
 		  <script src="../../resources/libraries/nprogress/nprogress.js"></script>
 			<!-- Bootbox -->
 			<script src= "../../resources/libraries/bootbox/bootbox.min.js"></script>
 			<!-- Custom Theme Scripts -->
 			<script src= "../../assets/js/jquery.easy-autocomplete.js"></script>
+			<script type="text/javascript">
+			$('#unclaimed_date').daterangepicker({
+			    ranges: {
+					'Today': [moment(), moment()],
+					'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				  },
+			    startDate: moment().startOf('month'),
+				endDate: moment().endOf('month')
+			}, function(start, end, label) {
+			  console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
+			});
+		</script>
 	<script type="text/javascript">
 	      var options = {
 	        url: function(phrase) {

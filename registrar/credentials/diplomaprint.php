@@ -57,7 +57,7 @@
 
     $curr_year = date("Y");
 
-    $curr_principal = "SELECT * FROM SIGNATORIES WHERE yr_ended = '$curr_year'
+    $curr_principal = "SELECT * FROM signatories WHERE yr_ended = '$curr_year'
                         AND position LIKE 'PRINCIPAL';";
     $curr_p = DB::query($curr_principal);
     if (count($curr_p) > 0) {
