@@ -146,6 +146,7 @@
              if (count($result) > 0){
                 foreach ($result as $row){
                   $currstud = $row['curr_code'];
+                  $stud_id = $row['stud_id'];
                 }
                 
              }
@@ -261,7 +262,13 @@
 
                      <p id="b1-r6-p1">LRN:</p>
                         <div id="b1-r6-d1" class="underline">
-                           <?php echo $stud_id; ?>
+                            <?php
+                              if ($currstud == "K-12"){
+                                 echo $stud_id;
+                              } else {
+                                echo "";
+                              }
+                            ?>
                         </div>
                     <p id = "b1-r1-p1">Name:</p>
                         <div id = "b1-r1-d1" class="underline">
@@ -291,38 +298,74 @@
 
                     <p id="b1-r2-p2">Province:</p>
                         <div id="b1-r2-d1" class="underline">
-                            <?php echo $province; ?>
+                            <?php
+                              if ($province == "NONE"){
+                                 echo "";
+                              } else {
+                                echo $province;
+                              }
+                            ?>
                         </div>
 
 
                     <p id="b1-r2-p3">Municipality/City:</p>
                         <div id="b1-r2-d2" class="underline">
-                            <?php echo $towncity; ?>
+                            <?php
+                              if ($towncity == "NONE"){
+                                 echo "";
+                              } else {
+                                echo $towncity;
+                              }
+                            ?>
                         </div>
 
 
                     <p id="b1-r2-p4">Barangay:</p>
                         <div id="b1-r2-d3" class="underline">
-                            <?php echo $barangay; ?>
+                            <?php
+                              if ($barangay == "NONE"){
+                                 echo "";
+                              } else {
+                                echo $barangay;
+                              }
+                            ?>
                         </div>
 
 
 
                     <p id="b1-r3-p1">Parent/Guardian:</p>
                         <div id="b1-r3-d1" class="underline">
-                            <?php echo $pname; ?>
+                            <?php
+                              if ($pname == "NONE"){
+                                 echo "";
+                              } else {
+                                echo $pname;
+                              }
+                            ?>
                         </div>
 
 
                     <p id="b1-r3-p2">Occupation:</p>
                         <div id="b1-r3-d2" class="underline">
-                            <?php echo $occupation; ?>
+                            <?php
+                              if ($occupation == "NONE"){
+                                 echo "";
+                              } else {
+                                echo $occupation;
+                              }
+                            ?>
                         </div>
 
 
                     <p id="b1-r4-p1">Address of Parent/Guardian:</p>
                         <div id="b1-r4-d1" class="underline">
-                            <?php echo $address; ?>
+                            <?php
+                              if ($address == "NONE"){
+                                 echo "";
+                              } else {
+                                echo $address;
+                              }
+                            ?>
                         </div>
 
 
@@ -334,7 +377,13 @@
 
                     <p id="b1-r5-p2"></p>
                         <div id="b1-r5-d2" class="underline">
-                            <?php echo $psname; ?>
+                            <?php
+                              if ($psname == "NONE"){
+                                 echo "";
+                              } else {
+                                echo $psname;
+                              }
+                            ?>
                         </div>
 
 
