@@ -193,10 +193,11 @@
                 </div>
                 <div class="col-md-3">
                   <form class="form-horizontal form-label-left">
-                    <div class="input-group" class="col-md-9">
-                      <input type="text" class="form-control">
+                    <label class="control-label">Year Graduated</label>
+                    <div class="input-group col-md-9">
+                      <input id="sy" type="text" class="form-control" placeholder="YYYY - YYYY" data-inputmask="'mask': '9999 - 9999'" value=<?php if(isset($_SESSION['filtersy'])){ $sy=$_SESSION['filtersy']; echo "'$sy'";} ?>>
                       <span class="input-group-btn">
-                        <button type="button" class="btn btn-primary">Go!</button>
+                        <button type="button" class="btn btn-primary" onclick="filtersy()">Go</button>
                       </span>
                     </div>
                   </form>
@@ -251,6 +252,14 @@
                     }else {
                       $filter = "all";
                     }
+
+                    if(isset($_SESSION['filtersy']) && $_SESSION['filtersy'] != "") {
+                      $sy = $_SESSION['filtersy'];
+                      $filtersy = 'AND schl_year = '."'$sy'"." AND yr_level = 4";
+                    }else {
+                      $filtersy = "";
+                    }
+
                     if(isset($_GET['page'])){
                       $page=$_GET['page'];
                       $start=($page-1)*$limit;
@@ -260,14 +269,14 @@
                     $search = "";
                     if(isset($_GET['search_key']) && $_GET['search_key'] != "") {
                       $search = htmlspecialchars(filter_var($_GET['search_key'], FILTER_SANITIZE_STRING), ENT_QUOTES);
-                      $statement = "SELECT * from students left join curriculum on students.curr_id = curriculum.curr_id where last_name like '$search%' or first_name like '$search%' or stud_id like '$search%' or concat(first_name,' ',last_name) like '$search%' or concat(last_name,' ',first_name,' ',mid_name) like '$search%' or concat(first_name,' ',mid_name,' ',last_name) like '$search%' order by $sort $sorttype;";
+                      $statement = "SELECT * from students left join curriculum on students.curr_id = curriculum.curr_id left join grades using (stud_id) where last_name like '$search%' or first_name like '$search%' or stud_id like '$search%' or concat(first_name,' ',last_name) like '$search%' or concat(last_name,' ',first_name,' ',mid_name) like '$search%' or concat(first_name,' ',mid_name,' ',last_name) like '$search%' order by $sort $sorttype limit $start, $limit;";
                     }else {
                       if($filter=="all") {
-                        $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id order by $sort $sorttype limit $start, $limit;";
+                        $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id join grades using (stud_id) where 1+1 = 2 $filtersy order by $sort $sorttype limit $start, $limit;";
                       }elseif ($filter == "graduate") {
-                         $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id natural join grades where yr_level >= 4 group by stud_id order by $sort $sorttype limit $start, $limit;";
+                         $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id left join grades using (stud_id) where yr_level >= 4 $filtersy group by stud_id order by $sort $sorttype limit $start, $limit;";
                       }else {
-                        $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id left join grades using(stud_id) where stud_id not in (select stud_id from grades where yr_level >= 4) group by stud_id order by $sort $sorttype limit $start, $limit;";
+                        $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id left join grades using(stud_id) where stud_id not in (select stud_id from grades where yr_level >= 4) $filtersy group by stud_id order by $sort $sorttype limit $start, $limit;";
                       }
                       
                     }
@@ -314,17 +323,18 @@ STUDLIST;
                 <?php
 
                   if(isset($_GET['search_key']) && $_GET['search_key'] != "") {
-                    $search = htmlspecialchars(filter_var($_GET['search_key'], FILTER_SANITIZE_STRING), ENT_QUOTES);
-                    $statement = "SELECT * from students left join curriculum on students.curr_id = curriculum.curr_id where last_name like '$search%' or first_name like '$search%' or stud_id like '$search%' or concat(first_name,' ',last_name) like '$search%' or concat(last_name,' ',first_name,' ',mid_name) like '$search%' or concat(first_name,' ',mid_name,' ',last_name) like '$search%' order by $sort $sorttype;"; 
-                  }else {
-                    if($filter=="all") {
-                        $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id order by $sort $sorttype;";
+                      $search = htmlspecialchars(filter_var($_GET['search_key'], FILTER_SANITIZE_STRING), ENT_QUOTES);
+                      $statement = "SELECT * from students left join curriculum on students.curr_id = curriculum.curr_id left join grades using (stud_id) where last_name like '$search%' or first_name like '$search%' or stud_id like '$search%' or concat(first_name,' ',last_name) like '$search%' or concat(last_name,' ',first_name,' ',mid_name) like '$search%' or concat(first_name,' ',mid_name,' ',last_name) like '$search%' order by $sort $sorttype;";
+                    }else {
+                      if($filter=="all") {
+                        $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id join grades using (stud_id) where 1+1 = 2 $filtersy order by $sort $sorttype;";
                       }elseif ($filter == "graduate") {
-                         $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id natural join grades where yr_level >= 4 group by stud_id order by $sort $sorttype;";
+                         $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id left join grades using (stud_id) where yr_level >= 4 $filtersy group by stud_id order by $sort $sorttype;";
                       }else {
-                        $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id natural join grades where stud_id not in (select stud_id from grades where yr_level >= 4 and yr_level != null) group by stud_id order by $sort $sorttype;";
+                        $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id left join grades using(stud_id) where stud_id not in (select stud_id from grades where yr_level >= 4) $filtersy group by stud_id order by $sort $sorttype;";
                       }
-                  }
+                      
+                    }
 
                     $result = DB::query($statement);
                     $rows = count($result);
@@ -506,6 +516,19 @@ STUDLIST;
     }
     };
     xhttp.open("GET", "phpscript/filter.php?filter="+val, true);
+    xhttp.send();
+    }
+    //Filter
+    function filtersy() {
+    var val = document.getElementById('sy').value;
+    console.log(val);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    location.assign("student_list.php");
+    }
+    };
+    xhttp.open("GET", "phpscript/filtersy.php?filtersy="+val, true);
     xhttp.send();
     }
     </script>

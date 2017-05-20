@@ -103,7 +103,7 @@
 												$request_purpose = strtoupper($request_purpose);
 												$cred_id = $row['cred_id'];
 												$stud_id = $row['stud_id'];
-
+												$req_id = $row['req_id'];
 												echo <<<UNCLAIMED
 												<tr class="odd pointer">
 																<td class=" ">$date_processed</td>
@@ -112,7 +112,7 @@
 																<td class=" ">$request_purpose</td>
 																<td class=" ">
 																<center>
-																	<a href="../../registrar/credentials/generate_cred.php?stud_id=$stud_id&credential=$cred_id&purpose=$request_purpose" class="btn btn-default"> Process Request</a>
+																	<a href="../../registrar/credentials/generate_cred.php?stud_id=$stud_id&credential=$cred_id&purpose=$request_purpose&req_id=$req_id" class="btn btn-default"> Process Request</a>
 																</center>
 																</td>
 												</tr>

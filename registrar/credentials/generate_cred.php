@@ -36,7 +36,7 @@
 		}
 
 	}
-
+	$date = date("Y-m-d");
 // Redirect to other page if credential is not form 137 or diploma
 	if($credential > 2) {
 		$checkpending = "SELECT * FROM pcnhsdb.requests where status = 'p' and stud_id = '$stud_id' and cred_id = '$credential' order by req_id desc limit 1;";
@@ -45,7 +45,7 @@
 	    	if(isset($_GET['new_request']) && $_GET['new_request']) {
 					$cred_id = htmlspecialchars($_GET['credential'], ENT_QUOTES);
 			    $personnel_id = htmlspecialchars($_SESSION['per_id'], ENT_QUOTES);
-			    $date = date("Y-m-d");
+			    
 			    //$request_purpose = htmlspecialchars($_GET['purpose']);
 
 					DB::insert('requests', array(
