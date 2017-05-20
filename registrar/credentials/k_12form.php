@@ -121,13 +121,16 @@
              <?php
 
              $stat = "";
+             $gram = "";
              $grstmt = "SELECT * FROM studentsubjects where stud_id = '$stud_id' and comment = 'failed'";
 
              $result = DB::query($grstmt);
              if (count($result) > 0) {
                 $stat = "irregular";
+                $gram = "an";
              }else {
                 $stat = "regular";
+                $gram = "a";
              }
 
 
@@ -147,7 +150,7 @@
                 
              }
              ?>
-             
+
              <?php
 
              $statement = "SELECT * FROM personnel WHERE per_id='$personnel_id'";
@@ -258,9 +261,7 @@
 
                      <p id="b1-r6-p1">LRN:</p>
                         <div id="b1-r6-d1" class="underline">
-                            <?php
-
-                            ?>
+                           <?php echo $stud_id; ?>
                         </div>
                     <p id = "b1-r1-p1">Name:</p>
                         <div id = "b1-r1-d1" class="underline">
@@ -938,7 +939,7 @@ A4;
 
                         <div id="box-7">
 
-                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I certify that this is a true copy of the records of <u><b><?php echo $name ?></b></u> This student is eligible on the <u><b><?php echo $DADay ?></b></u> day of <u><b><?php echo $DAmonth ?></b></u> <u><b><?php echo $DAyear ?></b></u> for admission to <u><b><?php echo $admitted_to ?></b></u> as a <?php echo $stat ?> student and <?php echo $formgender ?> has no property and/or money accountability in this school.</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I certify that this is a true copy of the records of <u><b><?php echo $name ?></b></u> This student is eligible on the <u><b><?php echo $DADay ?></b></u> day of <u><b><?php echo $DAmonth ?></b></u> <u><b><?php echo $DAyear ?></b></u> for admission to <u><b><?php echo $admitted_to ?></b></u> as <?php echo $gram ?> <?php echo $stat ?> student and <?php echo $formgender ?> has no property and/or money accountability in this school.</p>
 
                             <p id="b7-r1-p1">REMARKS: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<u><?php echo $request_purpose ?></u></p>
 
