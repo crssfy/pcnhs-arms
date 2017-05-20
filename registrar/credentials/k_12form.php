@@ -121,17 +121,34 @@
              <?php
 
              $stat = "";
+             $gram = "";
              $grstmt = "SELECT * FROM studentsubjects where stud_id = '$stud_id' and comment = 'failed'";
 
              $result = DB::query($grstmt);
              if (count($result) > 0) {
                 $stat = "irregular";
+                $gram = "an";
              }else {
                 $stat = "regular";
+                $gram = "a";
              }
 
 
 
+             ?>
+
+             <?php
+
+             $currstud = "";
+             $curstmt = "SELECT * FROM students NATURAL JOIN curriculum WHERE stud_id = '$stud_id'";
+
+             $result = DB::query($curstmt);
+             if (count($result) > 0){
+                foreach ($result as $row){
+                  $currstud = $row['curr_code'];
+                }
+                
+             }
              ?>
 
              <?php
@@ -149,6 +166,8 @@
                     }
              }
              ?>
+
+
 
              <?php
 
@@ -235,14 +254,14 @@
                 </div>
 
 
-                <p id = "formname">FORM 137-A (K-12 Curriculum)</p>
+                <p id = "formname">FORM 137-A (<?php echo $currstud ?>)</p>
 
                 <!--box-1-->
                 <div id = "box-1">
 
                      <p id="b1-r6-p1">LRN:</p>
                         <div id="b1-r6-d1" class="underline">
-                            <?php echo $stud_id; ?>
+                           <?php echo $stud_id; ?>
                         </div>
                     <p id = "b1-r1-p1">Name:</p>
                         <div id = "b1-r1-d1" class="underline">
@@ -880,6 +899,7 @@ A4;
                         </div>
 
 
+
                     </div>
                     <!-- //Fourth Year -->
                     </div>
@@ -904,63 +924,26 @@ A4;
                             ?>
                             <p id="b6-r1-p1">SUMMER/REMEDIAL CLASS</p>
 
-                            <p id="b6-r1-p2">School:</p>
-                            <div id="b6-r1-d1"><?php echo $school; ?></div>
-
-                            <p id="b6-r1-p3">School Year:</p>
-                            <div id="b6-r1-d2"><?php echo $school_year; ?></div>
-
-                            <!-- <p id="b6-r2-p1">Subject</p>
-                            <p id="b6-r2-p2">Final Rating</p>
-                            <p id="b6-r2-p3">Action Taken</p> -->
-
-                            <table style="height: 0px;">
-
-                                <tr id="b6-r2-head">
-                                <th class="add-col1">SUBJECT</th>
-                                <th class="add-col2">Final Rating</th>
-                                <th class="add-col3">Action Taken</th>
+                              <table class="table">
+                                 <tr>
+                                  <th class="add-col1">School</th>
+                                  <th class="add-col2">Year</th>
+                                  <th class="add-col3">Subject</th>
+                                  <th class="add-col4">Final Rating</th>
+                                  <th class="add-col5">Action Taken</th>
                                 </tr>
-
-                                <tr id="b6-r3">  <!-- additional subject -->
-                                <td class="add-subj"><?php echo $subject; ?></td> <!-- subject -->
-                                <td class="add-fr"><?php echo $final_rating; ?></td> <!-- final rating -->
-                                <td class="add-at"><?php echo $comment; ?></td> <!-- Action Taken -->
-                                </tr>
-
-                            </table>
-
-                            <!-- <div class="subject-name">
-
-                                </div>
-
-                                <div class="final-rating">
-
-                                </div>
-
-                                <div class="action-taken"> -->
-                            
-                            <p id="b6-r3-p4">Days of School:</p>
-                                <div id="b6-r3-d1"></div>
-
-                            <p id="b6-r3-p5">Days Present:</p>
-                                <div id="b6-r3-d2"></div>
-                            <!-- </div> -->
+                                
+                              </table>
 
                         </div>
 
                         <div id="box-7">
 
-                            <div id="cert">I certify that this is a true copy of the records of <div id="name-cert"> <?php echo $name; ?> </div> This student is eligible on</br> the <div id="day-cert"> <?php echo $DADay; ?> </div> day of <div id="month-cert"> <?php echo $DAmonth; ?> </div> <div id="year"> <?php echo $DAyear; ?> </div> for admission to <div id="grade-cert"> <?php echo $admitted_to; ?> </div> as a <div id="reg-cert"> <?php echo $stat; ?> </div> student and <div id="gender-cert"> <?php echo $formgender; ?> </div> has no</br> property and/or money accountability in this school.</div>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I certify that this is a true copy of the records of <u><b><?php echo $name ?></b></u> This student is eligible on the <u><b><?php echo $DADay ?></b></u> day of <u><b><?php echo $DAmonth ?></b></u> <u><b><?php echo $DAyear ?></b></u> for admission to <u><b><?php echo $admitted_to ?></b></u> as <?php echo $gram ?> <?php echo $stat ?> student and <?php echo $formgender ?> has no property and/or money accountability in this school.</p>
 
-                            <p id="b7-r1-p1">REMARKS:</p>
-                            <div id="b7-r1-d1"></div>
+                            <p id="b7-r1-p1">REMARKS: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<u><?php echo $request_purpose ?></u></p>
 
-                            <p id="b7-r1-p2">ISSUED TO: <div id="b7-r1-d2"><?PHP echo $request_purpose; ?></div></p>
-
-
-
-                            <p id="b7-r2-p1">NOTE: A mark, erasure or alternation of any entry invalidates this form.</p>
+                            <p id="b7-r1-p1">NOTE: A mark, erasure or alternation of any entry invalidates this form.</p>
 
                             <p id="b7-r4-p1">not valid without seal</p>
 
