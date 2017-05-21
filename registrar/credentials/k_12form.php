@@ -133,8 +133,23 @@
                 $gram = "a";
              }
 
+             ?>
 
-
+             <?php
+             $gram1 = "";
+             if($DADay == "1" || $DADay == "21" || $DADay == "31") {
+                $gram1 = "st";
+             } else {
+              if ($DADay == "2" || $DADay == "22") {
+                $gram1 = "nd";
+              } else {
+                if ($DADay == "3" || $DADay == "23"){
+                  $gram1 = "rd";
+                } else {
+                  $gram1 = "th";
+                }
+              }
+             }
              ?>
 
              <?php
@@ -988,7 +1003,7 @@ A4;
 
                         <div id="box-7">
 
-                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I certify that this is a true copy of the records of <u><b><?php echo $name ?></b></u> This student is eligible on the <u><b><?php echo $DADay ?></b></u> day of <u><b><?php echo $DAmonth ?></b></u> <u><b><?php echo $DAyear ?></b></u> for admission to <u><b><?php echo $admitted_to ?></b></u> as <?php echo $gram ?> <?php echo $stat ?> student and <?php echo $formgender ?> has no property and/or money accountability in this school.</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I certify that this is a true copy of the records of <u><b><?php echo $name ?></b></u> This student is eligible on the <u><b><?php echo $DADay ?><?php echo $gram1 ?></b></u> day of <u><b><?php echo $DAmonth ?></b></u> <u><b><?php echo $DAyear ?></b></u> for admission to <u><b><?php echo $admitted_to ?></b></u> as <?php echo $gram ?> <?php echo $stat ?> student and <?php echo $formgender ?> has no property and/or money accountability in this school.</p>
 
                             <p id="b7-r1-p1">REMARKS: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<u><?php echo $request_purpose ?></u></p>
 
