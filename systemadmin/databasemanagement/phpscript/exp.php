@@ -3,7 +3,6 @@
 include ('../../../resources/classes/Popover.php');
 session_start();
 
-
 $host = 'localhost';
 $user = 'root';
 $password = 'root';
@@ -34,7 +33,6 @@ if (mysqli_connect_errno())
    printf("Connect failed: %s", mysqli_connect_error());
    exit();
 }
-
 
 $return='';
 $return .= "--\n";
@@ -103,7 +101,6 @@ $popover = new Popover();
 $popover->set_popover($alert_type, $message);
 
 $_SESSION['db_msg_generate'] = $popover->get_popover();
-
 
 header("location: ../exp_db.php");
  

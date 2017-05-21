@@ -38,6 +38,7 @@
      <!-- Custom Theme Style -->
     <link href="../../assets/css/customstyle.css" rel="stylesheet">
     <link href="../../assets/css/easy-autocomplete-custom.css" rel="stylesheet">
+
   </head>
 
     <body class="nav-md">
