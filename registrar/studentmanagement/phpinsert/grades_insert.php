@@ -16,7 +16,8 @@
 			$insertgrades = "";
 			$comment = "";
 			//$credit_earned = htmlspecialchars($_POST['credit_earned']);
-			$average_grade = round($average_grade, 3);
+			$average_grade = round($average_grade, 5);
+			$total_credit = round($total_credit, 5);
 			header('Content-type:text/csv');
 			header("Content-Disposition: attachment; filename=$stud_id-year-level-$yr_level-partial-save.csv");
 			header("Content-Transfer-Encoding: UTF-8");
@@ -39,6 +40,9 @@
 			$comment = "";
 			$willInsert = true;
 			$hasSpecialGrade = false;
+
+			$average_grade = round($average_grade, 5);
+			$total_credit = round($total_credit, 5);
 
 			$curr_id = $_GET['curr_id'];
 			$curr_code = "";
@@ -222,22 +226,8 @@
 			}
 			$insertaverage = "INSERT INTO `pcnhsdb`.`grades` (`stud_id`, `schl_name`, `schl_year`, `yr_level`, `average_grade`, `total_credit`, `remarks`) VALUES ('$stud_id', '$schl_name', '$schl_year', '$yr_level', '$average_grade', '$total_credit', 'REGULAR');";
 
-			$yr_lvl = 1;
-			$statement = "SELECT * FROM pcnhsdb.attendance where stud_id = '$stud_id' order by yr_lvl desc limit 1;";
-			$result = DB::query($statement);
-			if (count($result) > 0) {
-				foreach ($result as $row) {
-					$yr_lvl = $row['yr_lvl'];
-					$yr_lvl = $yr_lvl+1;
-				}
-			}else {
-					$yr_lvl = 1;
-			}
-			$willInsert = true;
-
 
 			//$yr_lvl = htmlspecialchars($_POST['yr_lvl'], ENT_QUOTES);
-			$schl_yr = htmlspecialchars($_POST['schl_year'], ENT_QUOTES);
 			$school_days = htmlspecialchars($_POST['school_days'], ENT_QUOTES);
 			$days_attended = htmlspecialchars($_POST['days_attended'], ENT_QUOTES);
 			$total_years_in_school = htmlspecialchars($_POST['total_years_in_school'], ENT_QUOTES);
@@ -254,7 +244,7 @@
 				die();
 			}
 		//validate days attended.
-			if($days_attended > $school_days) {
+			if(intval($days_attended) > intval($school_days)) {
 				$willInsert = false;
 				$alert_type = "danger";
 				$error_message = "Ooops. The system did not accept the value that you entered, please check and enter a valid value.";
@@ -284,22 +274,7 @@
 				header("Location: " . $_SERVER["HTTP_REFERER"]);
 				die();
 			}
-			$validate_schl_yr = explode("-", $schl_yr);
-			$year1 = $validate_schl_yr[0];
-			$year2 = $validate_schl_yr[1];
-		// validate primary school year
-			if(intval($year1) > intval($year2) || intval($year2) != (intval($year1)+1) ) {
-				$willInsert = false;
-				$alert_type = "danger";
-				$error_message = "Ooops. The system did not accept the value that you entered, please check and enter a valid value.";
-				$popover = new Popover();
-				$popover->set_popover($alert_type, $error_message);
-				$_SESSION['error_pop'] = $popover->get_popover();
-
-				header("Location: " . $_SERVER["HTTP_REFERER"]);
-				die();
-			}
-			if(intval($total_years_in_school) != (intval($yr_lvl)+6)) {
+			if(intval($total_years_in_school) != (intval($yr_level)+6)) {
 				$willInsert = false;
 				$alert_type = "danger";
 				$error_message = "Ooops. The system did not accept the value that you entered, please check and enter a valid value.";
@@ -318,8 +293,8 @@
 				DB::query($insertaverage);
 				DB::insert('attendance', array(
 					'stud_id' => $stud_id,
-					'schl_yr' => $schl_yr,
-					'yr_lvl' => $yr_lvl,
+					'schl_yr' => $schl_year,
+					'yr_lvl' => $yr_level,
 					'days_attended' => $days_attended,
 					'school_days' => $school_days,
 					'total_years_in_school' => $total_years_in_school

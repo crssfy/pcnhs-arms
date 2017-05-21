@@ -261,7 +261,7 @@ if (isset($_SESSION['logged_in']) && isset($_SESSION['account_type'])) {
 								</thead>
 								<tbody>
 									<?php
-                  $statement = "SELECT stud_id, req_id, cred_id, request_purpose, date_processed as 'date processed', concat(first_name, ' ', last_name) as 'stud_name', cred_id, cred_name, request_type FROM pcnhsdb.requests natural join students natural join credentials where status='p' order by req_id asc limit 5;";
+                  $statement = "SELECT stud_id, req_id, cred_id, request_purpose, date_processed as 'date processed', concat(first_name, ' ', last_name) as 'stud_name', cred_id, cred_name, request_type FROM pcnhsdb.requests natural join students natural join credentials where status='p' order by req_id desc limit 5;";
 
                   $result = DB::query($statement);
                   foreach ($result as $row) {

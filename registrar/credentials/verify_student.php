@@ -113,23 +113,45 @@
                     $program = $row['prog_id'];
                     $curriculum = $row['curr_id'];
                     $curr_code = $row['curr_code'];
+                    $check_if_graduate_statement = "SELECT yr_level from grades where stud_id = '$stud_id' and yr_level = 4;";
+                    $check_if_graduate = DB::query($check_if_graduate_statement);
+                      if(count($check_if_graduate) > 0) {
+                        echo <<<STUDLIST
+                      <tr>
+                        <td>$stud_id</td>
+                        <td>$last_name</td>
+                        <td>$first_name</td>
+                        <td>
+                          <span class="">
+                          <center>
+                            <a href="../../registrar/credentials/generate_cred.php?stud_id=$stud_id&credential=$cred_id&purpose=$purpose&others=$others&new_request=true" class="btn btn-default"><i class="fa fa-plus"></i> Add Request</a>
 
-                    echo <<<STUDLIST
-                    <tr>
-                      <td>$stud_id</td>
-                      <td>$last_name</td>
-                      <td>$first_name</td>
-                      <td>
-                        <span class="">
-                        <center>
-                          <a href="../../registrar/credentials/generate_cred.php?stud_id=$stud_id&credential=$cred_id&purpose=$purpose&others=$others&new_request=true" class="btn btn-default"><i class="fa fa-plus"></i> Add Request</a>
-
-                          <a href="../../registrar/studentmanagement/student_info.php?stud_id=$stud_id" class="btn btn-default"><i class="fa fa-user"></i> View Profile</a>
-                          </center>
-                        </span>
-                      </td>
-                    </tr>
+                            <a href="../../registrar/studentmanagement/student_info.php?stud_id=$stud_id" class="btn btn-default"><i class="fa fa-user"></i> View Profile</a>
+                            </center>
+                          </span>
+                        </td>
+                      </tr>
 STUDLIST;
+                      }else {
+                        echo <<<STUDLIST
+                      <tr>
+                        <td>$stud_id</td>
+                        <td>$last_name</td>
+                        <td>$first_name</td>
+                        <td>
+                          <span class="">
+                          <center>
+                            <a class="btn btn-default" data-toggle="tooltip" data-placement="top"
+                               title="The record of this student is still incomplete. You cannot add credential request with this student."><i class="fa fa-plus"></i> Add Request</a>
+
+                            <a href="../../registrar/studentmanagement/student_info.php?stud_id=$stud_id" class="btn btn-default"><i class="fa fa-user"></i> View Profile</a>
+                            </center>
+                          </span>
+                        </td>
+                      </tr>
+STUDLIST;
+                      }
+                    
                       }
                     }
                     }else {

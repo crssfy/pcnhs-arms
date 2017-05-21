@@ -2,7 +2,7 @@
 <?php require_once "../../resources/config.php"; ?>
 <?php include('include_files/session_check.php'); ?>
 <?php
-
+	ob_start();
 	if(isset($_SESSION['generated_form137'])) {
             unset($_SESSION['generated_form137']);
             header("location: ../../index.php");
@@ -257,7 +257,12 @@ foreach ($result as $row) {
                       </div>
                       <div class="item form-group">
                       	<?php
-                      		$req_id = $_GET['req_id'];
+                      		if(isset($_GET['req_id']) && $_GET['req_id'] != "") {
+                      			$req_id = $_GET['req_id'];
+                      		}else {
+                      			header("location: requests.php");
+                      		}
+                      		
                       	?>
 						<label class="control-label col-md-3 col-sm-3 col-xs-12">Request ID</label>
 						<div class="col-md-6 col-sm-6 col-xs-12">
