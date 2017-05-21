@@ -15,8 +15,9 @@
 			$total_credit = filter_var($_POST['total_credits'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 			$insertgrades = "";
 			$comment = "";
-			$credit_earned = htmlspecialchars($_POST['credit_earned']);
-			$average_grade = round($average_grade, 3);
+			//$credit_earned = htmlspecialchars($_POST['credit_earned']);
+			$average_grade = round($average_grade, 5);
+			$total_credit = round($total_credit, 5);
 			header('Content-type:text/csv');
 			header("Content-Disposition: attachment; filename=$stud_id-year-level-$yr_level-partial-save.csv");
 			header("Content-Transfer-Encoding: UTF-8");
@@ -40,6 +41,9 @@
 			$willInsert = true;
 			$hasSpecialGrade = false;
 
+			$average_grade = round($average_grade, 5);
+			$total_credit = round($total_credit, 5);
+
 			$curr_id = $_GET['curr_id'];
 			$curr_code = "";
 
@@ -51,7 +55,7 @@
 				}
 			}
 
-			$checkgrade = "SELECT * from pcnhsdb.grades where stud_id = '$stud_id' AND yr_level = '$yr_level'";
+			$checkgrade = "SELECT * from pcnhsdb.grades where stud_id = '$stud_id' AND yr_level = '$yr_level' and remarks is null";
 		    $result = DB::query($checkgrade);
 				if (count($result) > 0) {
 		        $alert_type = "danger";
@@ -59,7 +63,7 @@
 		        $popover = new Popover();
 		        $popover->set_popover($alert_type, $error_message);
 		        $_SESSION['hasgrades'] = $popover->get_popover();
-		        header("location: student_info.php?stud_id=".$stud_id);
+		        header("location: ../student_info.php?stud_id=".$stud_id);
 		        die();
 		    }
 //
@@ -220,36 +224,84 @@
 
 				DB::query($insertgrades);
 			}
-			$insertaverage = "INSERT INTO `pcnhsdb`.`grades` (`stud_id`, `schl_name`, `schl_year`, `yr_level`, `average_grade`, `total_credit`) VALUES ('$stud_id', '$schl_name', '$schl_year', '$yr_level', '$average_grade', '$total_credit');";
+			$insertaverage = "INSERT INTO `pcnhsdb`.`grades` (`stud_id`, `schl_name`, `schl_year`, `yr_level`, `average_grade`, `total_credit`, `remarks`) VALUES ('$stud_id', '$schl_name', '$schl_year', '$yr_level', '$average_grade', '$total_credit', 'REGULAR');";
+
+
+			//$yr_lvl = htmlspecialchars($_POST['yr_lvl'], ENT_QUOTES);
+			$school_days = htmlspecialchars($_POST['school_days'], ENT_QUOTES);
+			$days_attended = htmlspecialchars($_POST['days_attended'], ENT_QUOTES);
+			$total_years_in_school = htmlspecialchars($_POST['total_years_in_school'], ENT_QUOTES);
+			$days_in_year = 365;
+
+			if(!is_numeric($days_attended) || !is_numeric($school_days)) {
+				$willInsert = false;
+				$alert_type = "danger";
+				$error_message = "Ooops. The system did not accept the value that you entered, please check and enter a valid value.";
+				$popover = new Popover();
+				$popover->set_popover($alert_type, $error_message);
+				$_SESSION['error_pop'] = $popover->get_popover();
+				header("Location: " . $_SERVER["HTTP_REFERER"]);
+				die();
+			}
+		//validate days attended.
+			if(intval($days_attended) > intval($school_days)) {
+				$willInsert = false;
+				$alert_type = "danger";
+				$error_message = "Ooops. The system did not accept the value that you entered, please check and enter a valid value.";
+				$popover = new Popover();
+				$popover->set_popover($alert_type, $error_message);
+				$_SESSION['error_pop'] = $popover->get_popover();
+				header("Location: " . $_SERVER["HTTP_REFERER"]);
+				die();
+			}
+			if(intval($days_attended) > $days_in_year || intval($school_days) > $days_in_year) {
+				$willInsert = false;
+				$alert_type = "danger";
+				$error_message = "Ooops. The system did not accept the value that you entered, please check and enter a valid value.";
+				$popover = new Popover();
+				$popover->set_popover($alert_type, $error_message);
+				$_SESSION['error_pop'] = $popover->get_popover();
+				header("Location: " . $_SERVER["HTTP_REFERER"]);
+				die();
+			}
+			if(intval($days_attended) < 100 || intval($school_days) < 100) {
+				$willInsert = false;
+				$alert_type = "danger";
+				$error_message = "Ooops. The system did not accept the value that you entered, please check and enter a valid value.";
+				$popover = new Popover();
+				$popover->set_popover($alert_type, $error_message);
+				$_SESSION['error_pop'] = $popover->get_popover();
+				header("Location: " . $_SERVER["HTTP_REFERER"]);
+				die();
+			}
+			if(intval($total_years_in_school) != (intval($yr_level)+6)) {
+				$willInsert = false;
+				$alert_type = "danger";
+				$error_message = "Ooops. The system did not accept the value that you entered, please check and enter a valid value.";
+				$popover = new Popover();
+				$popover->set_popover($alert_type, $error_message);
+				$_SESSION['error_pop'] = $popover->get_popover();
+				header("Location: " . $_SERVER["HTTP_REFERER"]);
+				die();
+			}
+
 
 			if($willInsert) {
 				unset($_SESSION['grade']);
 				unset($_SESSION['credits']);
 				unset($_SESSION['save-type']);
 				DB::query($insertaverage);
-				
-			    //USER LOGS
-			    date_default_timezone_set('Asia/Manila');
-			    $act_msg= "ADDED GRADES OF : $stud_id - $yr_level";
-			    $username = $_SESSION['username'];
-				$currTime = date("h:i:s A");
-			    $log_id = null;
-			    $currDate = date("Y-m-d");
-			    $accnt_type = $_SESSION['accnt_type'];
-
-			    DB::insert('user_logs', array(
-			              'log_id' => $log_id,
-			              'user_name' => $username,
-			              'time' => $currTime,
-			              'log_date' => $currDate,
-			              'account_type' => $accnt_type,
-			              'user_act' => $act_msg,
-			    ));
-
-
+				DB::insert('attendance', array(
+					'stud_id' => $stud_id,
+					'schl_yr' => $schl_year,
+					'yr_lvl' => $yr_level,
+					'days_attended' => $days_attended,
+					'school_days' => $school_days,
+					'total_years_in_school' => $total_years_in_school
+				));
 				echo "<p>Updating Database, please wait...</p>";
 				header("refresh:3;url=../student_info.php?stud_id=$stud_id");
-				
+				//$_SESSION['user_activity'][] = "ADDED NEW GRADES: $stud_id - $yr_level";
 			}
 		}
 	}

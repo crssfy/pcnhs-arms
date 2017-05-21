@@ -23,7 +23,7 @@
 	    <!-- Tablesorter: required -->
 	    <script src="../../resources/libraries/tablesorter/js/jquery.tablesorter.js"></script>
 	    <script src="../../resources/libraries/tablesorter/js/jquery.tablesorter.widgets.js"></script>
-
+	    
 	    <!-- NProgress -->
 	    <link href="../../resources/libraries/nprogress/nprogress.css" rel="stylesheet">
 	    <!-- Bootstrap -->
@@ -33,7 +33,8 @@
 
 	    <!-- Datatables -->
 	    <link href="../../resources/libraries/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-
+	    <!-- Date Range Picker -->
+		<link href="../../resources/libraries/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
 	    <!-- Custom Theme Style -->
 	    <link href="../../assets/css/custom.min.css" rel="stylesheet">
 	     <!-- Custom Theme Style -->
@@ -74,6 +75,48 @@
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
+						<!-- Date Picker -->
+						<div class="row">
+							<div class="col-md-4">
+								Select Date
+								<form class="form-horizontal" action="released.php" method="get">
+									<fieldset>
+
+										<div class="control-group">
+											<div class="controls">
+												<div class="input-prepend input-group">
+													<span class="add-on input-group-addon">
+														<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+													</span>
+													<input type="text" name="released_date" id="released_date" class="form-control" value=" " />
+													<span class="input-group-btn">
+														<button type="submit" class="btn btn-primary">Go</button>
+													</span>
+												</div>
+											</div>
+										</div>
+
+									</fieldset>
+								</form>
+							</div>
+							<br>
+							<?php
+									$released_date = "";
+									if(isset($_GET['released_date'])) {
+										$released_date = $_GET['released_date'];
+										$released_date = preg_replace('/\s+/', '', $released_date);
+
+									}else {
+										$date_from = date("m/01/Y");
+										$date_to = date("m/d/Y");
+										$released_date = $date_from.' - '.$date_to;
+										$released_date = preg_replace('/\s+/', '', $released_date);
+									}
+
+
+								?>
+						</div>
+	                      <!-- Date Picker -->
 						<div class="released-list">
 							<table class="tablesorter-bootstrap">
 								<thead>
@@ -95,8 +138,50 @@
 								}else{
 									$page=1;
 								}
+								if(isset($_GET['released_date'])) {
+				                    	$released_date = $_GET['released_date'];
+				                    	$from_and_to_date = explode("-", $released_date);
+				                    	$sqldate_format_from = explode("/", $from_and_to_date[0]);
+										$m = $sqldate_format_from[0];
+										$d = $sqldate_format_from[1];
+										$y = $sqldate_format_from[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$from = $y."-".$m."-".$d;
+										$sqldate_format_to = explode("/", $from_and_to_date[1]);
+										$m = $sqldate_format_to[0];
+										$d = $sqldate_format_to[1];
+										$y = $sqldate_format_to[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$to = $y."-".$m."-".$d;
 
-								$statement = "SELECT stud_id, date_released as 'date released', concat(first_name, ' ' ,last_name) as 'stud_name', cred_name FROM pcnhsdb.requests natural join students natural join credentials where status='r' order by date_released desc limit $start, $limit;";
+
+										$statement = "SELECT stud_id, date_released as 'date released', concat(first_name, ' ' ,last_name) as 'stud_name', cred_name FROM pcnhsdb.requests natural join students natural join credentials where status='r' and date_released between '$from' and '$to' order by date_released desc limit $start, $limit;";
+				                    }else {
+				                    	$released_date = date('m/01/y').'-'.date('m/d/y');
+				                    	$from_and_to_date = explode("-", $released_date);
+				                    	$sqldate_format_from = explode("/", $from_and_to_date[0]);
+										$m = $sqldate_format_from[0];
+										$d = $sqldate_format_from[1];
+										$y = $sqldate_format_from[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$from = $y."-".$m."-".$d;
+										$sqldate_format_to = explode("/", $from_and_to_date[1]);
+										$m = $sqldate_format_to[0];
+										$d = $sqldate_format_to[1];
+										$y = $sqldate_format_to[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$to = $y."-".$m."-".$d;
+				                    	$statement = "SELECT stud_id, date_released as 'date released', concat(first_name, ' ' ,last_name) as 'stud_name', cred_name FROM pcnhsdb.requests natural join students natural join credentials where status='r' order by date_released desc limit $start, $limit;";
+				                    }
+								
 								$result = DB::query($statement);
 								if (count($result) > 0) {
 									foreach ($result as $row) {
@@ -118,13 +203,83 @@ RELEASED;
 					</tbody>
 				</table>
 				<?php
-							$statement = "SELECT date_released as 'date released', concat(first_name, ' ' ,last_name) as 'stud_name', cred_name FROM pcnhsdb.requests natural join students natural join credentials where status='r';";
+							if(isset($_GET['released_date'])) {
+				                    	$released_date = $_GET['released_date'];
+				                    	$from_and_to_date = explode("-", $released_date);
+				                    	$sqldate_format_from = explode("/", $from_and_to_date[0]);
+										$m = $sqldate_format_from[0];
+										$d = $sqldate_format_from[1];
+										$y = $sqldate_format_from[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$from = $y."-".$m."-".$d;
+										$sqldate_format_to = explode("/", $from_and_to_date[1]);
+										$m = $sqldate_format_to[0];
+										$d = $sqldate_format_to[1];
+										$y = $sqldate_format_to[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$to = $y."-".$m."-".$d;
+
+
+										$statement = "SELECT stud_id, date_released as 'date released', concat(first_name, ' ' ,last_name) as 'stud_name', cred_name FROM pcnhsdb.requests natural join students natural join credentials where status='r' and date_released between '$from' and '$to' order by date_released;";
+				                    }else {
+				                    	$released_date = date('m/01/y').'-'.date('m/d/y');
+				                    	$from_and_to_date = explode("-", $released_date);
+				                    	$sqldate_format_from = explode("/", $from_and_to_date[0]);
+										$m = $sqldate_format_from[0];
+										$d = $sqldate_format_from[1];
+										$y = $sqldate_format_from[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$from = $y."-".$m."-".$d;
+										$sqldate_format_to = explode("/", $from_and_to_date[1]);
+										$m = $sqldate_format_to[0];
+										$d = $sqldate_format_to[1];
+										$y = $sqldate_format_to[2];
+										$m = preg_replace('/\s+/', '', $m);
+										$d = preg_replace('/\s+/', '', $d);
+										$y = preg_replace('/\s+/', '', $y);
+										$to = $y."-".$m."-".$d;
+				                    	$statement = "SELECT stud_id, date_released as 'date released', concat(first_name, ' ' ,last_name) as 'stud_name', cred_name FROM pcnhsdb.requests natural join students natural join credentials where status='r' order by date_released;";
+				                    }
 
 							$result = DB::query($statement);
 							$rows = count($result);
 
 							$total = ceil($rows/$limit);
-							echo '<div class="pull-right">
+							if(isset($_GET['released_date'])) {
+								$released_date = $_GET['released_date'];
+								echo '<div class="pull-right">
+									<div class="col s12">
+											<ul class="pagination center-align">';
+													if($page > 1) {
+													echo "<li class=''><a href='released.php?released_date=$released_date&page=".($page-1)."'>Previous</a></li>";
+													}else if($total <= 0) {
+													echo '<li class="disabled"><a>Previous</a></li>';
+													}else {
+													echo '<li class="disabled"><a>Previous</a></li>';
+													}
+													for($i = 1;$i <= $total; $i++) {
+													if($i==$page) {
+													echo "<li class='active'><a href='released.php?released_date=$released_date&page=$i'>$i</a></li>";
+													} else {
+													echo "<li class=''><a href='released.php?released_date=$released_date&page=$i'>$i</a></li>";
+													}
+													}
+													if($total == 0) {
+													echo "<li class='disabled'><a>Next</a></li>";
+													}else if($page!=$total) {
+													echo "<li class=''><a href='released.php?released_date=$released_date&page=".($page+1)."'>Next</a></li>";
+													}else {
+													echo "<li class='disabled'><a>Next</a></li>";
+													}
+											echo "</ul></div></div>";
+										}else {
+											echo '<div class="pull-right">
 									<div class="col s12">
 											<ul class="pagination center-align">';
 													if($page > 1) {
@@ -149,6 +304,8 @@ RELEASED;
 													echo "<li class='disabled'><a>Next</a></li>";
 													}
 											echo "</ul></div></div>";
+										}
+							
 
 									?>
 			</div>
@@ -167,10 +324,29 @@ RELEASED;
 		<!-- input mask -->
 		<script src= "../../resources/libraries/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js"></script>
 		<script src= "../../resources/libraries/parsleyjs/dist/parsley.min.js"></script>
+		<!-- Date Range Picker -->
+			<script src="../../resources/libraries/moment/min/moment.min.js"></script>
+			<script src="../../resources/libraries/bootstrap-daterangepicker/daterangepicker.js"></script>
 		<!-- NProgress -->
 	  <script src="../../resources/libraries/nprogress/nprogress.js"></script>
 		<!-- Custom Theme Scripts -->
 		<script src= "../../assets/js/jquery.easy-autocomplete.js"></script>
+		<script type="text/javascript">
+			$('#released_date').daterangepicker({
+			    ranges: {
+					'Today': [moment(), moment()],
+					'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				  },
+			    startDate: moment().startOf('month'),
+				endDate: moment().endOf('month')
+			}, function(start, end, label) {
+			  console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
+			});
+		</script>
 	<script type="text/javascript">
 	      var options = {
 	        url: function(phrase) {

@@ -14,7 +14,9 @@ if (isset($_SESSION['logged_in']) && isset($_SESSION['account_type'])) {
     }
 }
 else {
+
     header('Location: ../../login.php');
+
 }
 
 ?>

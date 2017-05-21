@@ -2,7 +2,7 @@
 <?php require_once "../../resources/config.php"; ?>
 <?php include('include_files/session_check.php'); ?>
 <?php
-
+	ob_start();
 	if(isset($_SESSION['generated_form137'])) {
             unset($_SESSION['generated_form137']);
             header("location: ../../index.php");
@@ -36,7 +36,7 @@
 		}
 
 	}
-
+	$date = date("Y-m-d");
 // Redirect to other page if credential is not form 137 or diploma
 	if($credential > 2) {
 		$checkpending = "SELECT * FROM pcnhsdb.requests where status = 'p' and stud_id = '$stud_id' and cred_id = '$credential' order by req_id desc limit 1;";
@@ -45,7 +45,7 @@
 	    	if(isset($_GET['new_request']) && $_GET['new_request']) {
 					$cred_id = htmlspecialchars($_GET['credential'], ENT_QUOTES);
 			    $personnel_id = htmlspecialchars($_SESSION['per_id'], ENT_QUOTES);
-			    $date = date("Y-m-d");
+			    
 			    //$request_purpose = htmlspecialchars($_GET['purpose']);
 
 					DB::insert('requests', array(
@@ -69,6 +69,7 @@
 
 	}
 	if($credential == 2) {
+		$req_id = $_GET['req_id'];
 		$checkpending = "SELECT * FROM pcnhsdb.requests where status = 'p' and stud_id = '$stud_id' and cred_id = '$credential' order by req_id desc limit 1;";
     	$result = DB::query($checkpending);
 		if(count($result) <= 0) {
@@ -89,11 +90,11 @@
 		    	header("location: requests.php");
 		    	die();
 			}else {
-		    	header("location: generate_diploma.php?stud_id=$stud_id&credential=$credential&purpose=$request_purpose");
+		    	header("location: generate_diploma.php?stud_id=$stud_id&credential=$credential&purpose=$request_purpose&req_id=$req_id");
 				die();
 		    }
 	    }else {
-		    	header("location: generate_diploma.php?stud_id=$stud_id&credential=$credential&purpose=$request_purpose");
+		    	header("location: generate_diploma.php?stud_id=$stud_id&credential=$credential&purpose=$request_purpose&req_id=$req_id");
 				die();
 		    }
 
@@ -130,6 +131,59 @@
     }
 
 
+?>
+<?php
+if (isset($_GET['stud_id'])) {
+$stud_id = $_GET['stud_id'];
+} else {
+$stud_id = "";
+}
+$first_name;
+$mid_name;
+$last_name;
+$gender;
+$birth_date;
+$birth_place;
+$schl_location;
+$yr_grad;
+$program;
+$curriculum;
+$pname;
+$parent_occupation;
+$parent_address;
+$primary_schl_name;
+$primary_schl_year;
+$total_elem_years;
+$gpa;
+
+$statement = "SELECT * FROM pcnhsdb.students left join parent on students.stud_id = parent.stud_id left join primaryschool on students.stud_id = primaryschool.stud_id left join programs on students.prog_id = programs.prog_id left join curriculum on students.curr_id = curriculum.curr_id left join grades on students.stud_id = grades.stud_id where students.stud_id = '$stud_id' order by schl_year desc limit 1";
+$result = DB::query($statement);
+if (!$result) {
+	//echo "<p>Record Not Found. <a href='../../index.php'>Back to Home</a></p>";
+	header("location: student_list.php");
+	die();
+}
+foreach ($result as $row) {
+	$curriculum = $row['curr_name'];
+	$first_name = $row['first_name'];
+	$mid_name = $row['mid_name'];
+	$last_name = $row['last_name'];
+	$gender = $row['gender'];
+	$birth_date = $row['birth_date'];
+	$province = $row['province'];
+	$towncity = $row['towncity'];
+	$barangay = $row['barangay'];
+	$last_schyear_attended = $row['schl_year'];
+	$second_school_name = $row['second_school_name'];
+	$program = $row['prog_name'];
+	$pname = $row['pname'];
+	$parent_occupation = $row['occupation'];
+	$parent_address = $row['address'];
+	$primary_schl_name = $row['psname'];
+	$primary_schl_year = $row['pschool_year'];
+	$total_elem_years = $row['total_elem_years'];
+	$gpa = $row['gen_average'];
+}
 ?>
 <html>
 	<head>
@@ -182,6 +236,9 @@
 						</li>
 					</ul>
 					<div class="clearfix"></div>
+					<h5><b>Student ID: </b><?php echo "$stud_id"; ?></h5>
+						<h5><b>Student Name: </b><?php echo "$last_name".', '."$first_name"; ?></h5>
+						<h5><b>Curriculum: </b><?php echo "$curriculum"; ?></h5>
 				</div>
 				<div class="x_content">
 					<div class="clearfix"></div>
@@ -198,6 +255,20 @@
 						</p>
                         </div>
                       </div>
+                      <div class="item form-group">
+                      	<?php
+                      		if(isset($_GET['req_id']) && $_GET['req_id'] != "") {
+                      			$req_id = $_GET['req_id'];
+                      		}else {
+                      			header("location: requests.php");
+                      		}
+                      		
+                      	?>
+						<label class="control-label col-md-3 col-sm-3 col-xs-12">Request ID</label>
+						<div class="col-md-6 col-sm-6 col-xs-12">
+							<input id="name" class="form-control col-md-7 col-xs-12" required="required" type="text" name="req_id" readonly="" value=<?php echo $req_id; ?>>
+						</div>
+					</div>
 					<div class="item form-group">
 						<label class="control-label col-md-3 col-sm-3 col-xs-12">Date Today</label>
 						<div class="col-md-6 col-sm-6 col-xs-12">
@@ -284,7 +355,10 @@
 	<div class="row no-print">
 		<div class="col-xs-12">
 			<button class="btn btn-primary pull-right"><i class="fa fa-print"></i> Generate</button>
-			<a class="btn btn-default pull-right" href=<?php echo "choose_credential.php?stud_id=$stud_id"; ?>>Cancel</a>
+			<?php
+				$link = $_SERVER['HTTP_REFERER'];
+			?>
+			<a class="btn btn-default pull-right" href=<?php echo "$link"; ?>>Cancel</a>
 		</div>
 	</div>
 </form>

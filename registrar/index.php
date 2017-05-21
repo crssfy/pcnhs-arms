@@ -53,7 +53,8 @@ if (isset($_SESSION['logged_in']) && isset($_SESSION['account_type'])) {
 	    <script src="../resources/libraries/tablesorter/js/jquery.tablesorter.widgets.js"></script>
 		<!-- NProgress -->
 		<link href="../resources/libraries/nprogress/nprogress.css" rel="stylesheet">
-
+		<!-- Date Range Picker -->
+		<link href="../resources/libraries/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
 		<!-- Bootstrap -->
 		<link href="../resources/libraries/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 		<!-- Font Awesome -->
@@ -86,9 +87,29 @@ if (isset($_SESSION['logged_in']) && isset($_SESSION['account_type'])) {
 		<?php include "../resources/templates/registrar/top-nav.php"; ?>
 		<!-- Content Here -->
 		<!-- page content -->
+
 		<div class="right_col" role="main">
 			<div class="row">
 				<div class="col-md-12">
+					<div class="col-md-4 pull">
+						<form class="form-horizontal" action="index.php" method="get">
+							<fieldset>
+								<div class="control-group">
+									<div class="controls">
+										<div class="input-prepend input-group">
+											<span class="add-on input-group-addon">
+												<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+											</span>
+											<input type="text" name="dashboard_date" id="dashboard_date" class="form-control" value="" />
+											<span class="input-group-btn">
+												<button type="submit" class="btn btn-primary">Go</button>
+											</span>
+										</div>
+									</div>
+								</div>
+							</fieldset>
+						</form>
+					</div>
 					<div id="button-wc" class="pull-right">
 						<button  class="btn btn-default" onclick="start_tour();" data-toggle="tooltip" data-placement="top"
                                title="Click to start the quick tour of the site.">Start the Quick Tour</button>
@@ -97,27 +118,52 @@ if (isset($_SESSION['logged_in']) && isset($_SESSION['account_type'])) {
 			</div>
 			<br>
             <?php
-                $month = date('m/01/y') . '-' . date('m/d/y');
-                $from_and_to_date = explode("-", $month);
-                $sqldate_format_from = explode("/", $from_and_to_date[0]);
-                $m = $sqldate_format_from[0];
-                $d = $sqldate_format_from[1];
-                $y = $sqldate_format_from[2];
-                $m = preg_replace('/\s+/', '', $m);
-                $d = preg_replace('/\s+/', '', $d);
-                $y = preg_replace('/\s+/', '', $y);
+            	if(isset($_GET['dashboard_date']) && $_GET['dashboard_date'] != "") {
+					$dashboard_date = $_GET['dashboard_date'];
+					$from_and_to_date = explode("-", $dashboard_date);
+					$sqldate_format_from = explode("/", $from_and_to_date[0]);
+					$m = $sqldate_format_from[0];
+					$d = $sqldate_format_from[1];
+					$y = $sqldate_format_from[2];
+					$m = preg_replace('/\s+/', '', $m);
+					$d = preg_replace('/\s+/', '', $d);
+					$y = preg_replace('/\s+/', '', $y);
+					$from = $y."-".$m."-".$d;
+					$sqldate_format_to = explode("/", $from_and_to_date[1]);
+					$m = $sqldate_format_to[0];
+					$d = $sqldate_format_to[1];
+					$y = $sqldate_format_to[2];
+					$m = preg_replace('/\s+/', '', $m);
+					$d = preg_replace('/\s+/', '', $d);
+					$y = preg_replace('/\s+/', '', $y);
+					$to = $y."-".$m."-".$d;
 
-                $from = $y . "-" . $m . "-" . $d;
+					echo "<p>Showing summary from <b>$from</b> to <b>$to</b></p>";
+            	}else {
+            		$month = date('m/01/Y') . '-' . date('m/d/Y');
+	                $from_and_to_date = explode("-", $month);
+	                $sqldate_format_from = explode("/", $from_and_to_date[0]);
+	                $m = $sqldate_format_from[0];
+	                $d = $sqldate_format_from[1];
+	                $y = $sqldate_format_from[2];
+	                $m = preg_replace('/\s+/', '', $m);
+	                $d = preg_replace('/\s+/', '', $d);
+	                $y = preg_replace('/\s+/', '', $y);
 
-                $sqldate_format_to = explode("/", $from_and_to_date[1]);
-                $m = $sqldate_format_to[0];
-                $d = $sqldate_format_to[1];
-                $y = $sqldate_format_to[2];
-                $m = preg_replace('/\s+/', '', $m);
-                $d = preg_replace('/\s+/', '', $d);
-                $y = preg_replace('/\s+/', '', $y);
+	                $from = $y."-".$m."-".$d;
 
-                $to = $y . "-" . $m . "-" . $d;
+	                $sqldate_format_to = explode("/", $from_and_to_date[1]);
+	                $m = $sqldate_format_to[0];
+	                $d = $sqldate_format_to[1];
+	                $y = $sqldate_format_to[2];
+	                $m = preg_replace('/\s+/', '', $m);
+	                $d = preg_replace('/\s+/', '', $d);
+	                $y = preg_replace('/\s+/', '', $y);
+
+	                $to = $y."-".$m."-".$d;
+	                echo "<p>Showing summary from <b>$from</b> to <b>$to</b></p>";
+            	}
+                
             ?>
 			<div class="row top_tiles">
 				<a href="studentmanagement/student_list.php">
@@ -136,6 +182,23 @@ if (isset($_SESSION['logged_in']) && isset($_SESSION['account_type'])) {
 							<p>&nbsp</p>
 						</div>
 					</div>
+					</a>
+					<a href="credentials/requests.php">
+						<div id="dash-4" class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+							<div class="tile-stats">
+								<div class="icon"><i class="glyphicon glyphicon-check"></i></div>
+								<?php
+                  $result = DB::query("SELECT count(*) as totalreq FROM pcnhsdb.requests where status = 'p';");
+                  foreach ($result as $row) {
+                    $totalreq = $row["totalreq"];
+                    echo "<div class='count'>$totalreq</div>";
+                  }
+                ?>
+								<p>&nbsp</p>
+								<h3>New Requests</h3>
+								<p>&nbsp</p>
+							</div>
+						</div>
 					</a>
 					<a href="credentials/unclaimed.php">
 						<div id="dash-2" class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
@@ -171,23 +234,6 @@ if (isset($_SESSION['logged_in']) && isset($_SESSION['account_type'])) {
 							</div>
 						</div>
 					</a>
-					<a href="reports/transaction.php">
-						<div id="dash-4" class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
-							<div class="tile-stats">
-								<div class="icon"><i class="glyphicon glyphicon-check"></i></div>
-								<?php
-                  $result = DB::query("SELECT count(*) as totaltrans FROM pcnhsdb.transaction where trans_date between '$from' and '$to';");
-                  foreach ($result as $row) {
-                    $totaltrans = $row["totaltrans"];
-                    echo "<div class='count'>$totaltrans</div>";
-                  }
-                ?>
-								<p>&nbsp</p>
-								<h3>Transactions</h3>
-								<p>&nbsp</p>
-							</div>
-						</div>
-					</a>
 				</div>
 				<div class="row">
 				<div class="col-md-12 col-sm-12 col-xs-12">
@@ -215,7 +261,7 @@ if (isset($_SESSION['logged_in']) && isset($_SESSION['account_type'])) {
 								</thead>
 								<tbody>
 									<?php
-                  $statement = "SELECT stud_id, req_id, cred_id, request_purpose, date_processed as 'date processed', concat(first_name, ' ', last_name) as 'stud_name', cred_id, cred_name, request_type FROM pcnhsdb.requests natural join students natural join credentials where status='p' order by req_id asc limit 5;";
+                  $statement = "SELECT stud_id, req_id, cred_id, request_purpose, date_processed as 'date processed', concat(first_name, ' ', last_name) as 'stud_name', cred_id, cred_name, request_type FROM pcnhsdb.requests natural join students natural join credentials where status='p' order by req_id desc limit 5;";
 
                   $result = DB::query($statement);
                   foreach ($result as $row) {
@@ -226,7 +272,7 @@ if (isset($_SESSION['logged_in']) && isset($_SESSION['account_type'])) {
                     $request_purpose = strtoupper($request_purpose);
                     $cred_id = $row['cred_id'];
                     $stud_id = $row['stud_id'];
-
+                    $req_id = $row['req_id'];
                     echo <<<UNCLAIMED
                       <tr class="odd pointer">
                           <td class=" ">$date_processed</td>
@@ -235,7 +281,7 @@ if (isset($_SESSION['logged_in']) && isset($_SESSION['account_type'])) {
                           <td class=" ">$request_purpose</td>
                           <td class=" ">
                             <center>
-                              <a href="../registrar/credentials/generate_cred.php?stud_id=$stud_id&credential=$cred_id&purpose=$request_purpose" class="btn btn-default"> Process Request</a>
+                              <a href="../registrar/credentials/generate_cred.php?stud_id=$stud_id&credential=$cred_id&purpose=$request_purpose&req_id=$req_id" class="btn btn-default"> Process Request</a>
                             </center>
                           </td>
                       </tr>
@@ -263,11 +309,30 @@ UNCLAIMED;
 		<!-- FastClick -->
 		<script src= "../resources/libraries/fastclick/lib/fastclick.js"></script>
 		<!-- input mask -->
+		<!-- Date Range Picker -->
+		<script src="../resources/libraries/moment/min/moment.min.js"></script>
+		<script src="../resources/libraries/bootstrap-daterangepicker/daterangepicker.js"></script>
 		<!-- NProgress -->
 		<script src="../resources/libraries/nprogress/nprogress.js"></script>
 		<script src="../resources/libraries/bootstrap-tour/build/js/bootstrap-tour-standalone.min.js"></script>
 		<!-- Custom Theme Scripts -->
 		<script src= "../assets/js/jquery.easy-autocomplete.js"></script>
+		<script type="text/javascript">
+			$('#dashboard_date').daterangepicker({
+			    ranges: {
+					'Today': [moment(), moment()],
+					'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				  },
+			    startDate: moment().startOf('month'),
+				endDate: moment().endOf('month')
+			}, function(start, end, label) {
+			  console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
+			});
+		</script>
 		<script type="text/javascript">
 	      $(function() {
 	      $('.recent-request').tablesorter();

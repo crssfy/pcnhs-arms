@@ -40,6 +40,7 @@
     <link href="../../assets/css/easy-autocomplete-custom.css" rel="stylesheet">
 
   </head>
+
     <body class="nav-md">
       <?php include "../../resources/templates/admin/sidebar.php"; ?>
       <?php include "../../resources/templates/admin/top-nav.php"; ?>
@@ -83,7 +84,7 @@
                           <p><strong>Note:  <i class="fa fa-info-circle"></i> </strong> Importing a backup file will <strong>overwrite</strong> the current database.</p>
                             <thead>
                             <tr>
-                                <th>Generate Backup Files</th>
+                                <th>Generated Backup Files</th>
                                 <th>Size</th>
                                  <th>Date Created</th>
                                 <th data-sorter="false"><center>Actions</center></th>

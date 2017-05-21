@@ -1,5 +1,58 @@
 <?php require_once "../../resources/config.php"; ?>
 <?php include('include_files/session_check.php'); ?>
+<?php
+if (isset($_GET['stud_id'])) {
+$stud_id = $_GET['stud_id'];
+} else {
+$stud_id = "";
+}
+$first_name;
+$mid_name;
+$last_name;
+$gender;
+$birth_date;
+$birth_place;
+$schl_location;
+$yr_grad;
+$program;
+$curriculum;
+$pname;
+$parent_occupation;
+$parent_address;
+$primary_schl_name;
+$primary_schl_year;
+$total_elem_years;
+$gpa;
+
+$statement = "SELECT * FROM pcnhsdb.students left join parent on students.stud_id = parent.stud_id left join primaryschool on students.stud_id = primaryschool.stud_id left join programs on students.prog_id = programs.prog_id left join curriculum on students.curr_id = curriculum.curr_id left join grades on students.stud_id = grades.stud_id where students.stud_id = '$stud_id' order by schl_year desc limit 1";
+$result = DB::query($statement);
+if (!$result) {
+    //echo "<p>Record Not Found. <a href='../../index.php'>Back to Home</a></p>";
+    header("location: student_list.php");
+    die();
+}
+foreach ($result as $row) {
+    $curriculum = $row['curr_name'];
+    $first_name = $row['first_name'];
+    $mid_name = $row['mid_name'];
+    $last_name = $row['last_name'];
+    $gender = $row['gender'];
+    $birth_date = $row['birth_date'];
+    $province = $row['province'];
+    $towncity = $row['towncity'];
+    $barangay = $row['barangay'];
+    $last_schyear_attended = $row['schl_year'];
+    $second_school_name = $row['second_school_name'];
+    $program = $row['prog_name'];
+    $pname = $row['pname'];
+    $parent_occupation = $row['occupation'];
+    $parent_address = $row['address'];
+    $primary_schl_name = $row['psname'];
+    $primary_schl_year = $row['pschool_year'];
+    $total_elem_years = $row['total_elem_years'];
+    $gpa = $row['gen_average'];
+}
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -49,13 +102,22 @@
                     unset($_SESSION['error_pop']);
                 }
             ?>
+            <div class="row">
+                <div class="col-md-9">
+                    <a class="btn btn-default" href=<?php echo "student_info.php?stud_id=$stud_id"; ?>><i class="fa fa-arrow-circle-left"></i> Back</a>
+                </div>
+            </div>
             <div class="x_panel">
                 <div class="x_title">
                     <h2>Add Attendance - <small>Year Level: <?php echo $_GET['yr_lvl'] ?></small></h2>
                     <div class="clearfix"></div>
+                    <h5><b>Student ID: </b><?php echo "$stud_id"; ?></h5>
+                        <h5><b>Student Name: </b><?php echo "$last_name".', '."$first_name"; ?></h5>
+                        <h5><b>Curriculum: </b><?php echo "$curriculum"; ?></h5>
                 </div>
                 <div class="x_content">
                     <!-- First -->
+
                     <form id="val-gr" class="form-horizontal form-label-left" action=<?php $stud_id = $_GET['stud_id']; echo "phpinsert/attendance_insert.php?stud_id=$stud_id" ?> method="POST" novalidate>
                             <?php
                                         $stud_id = $_GET['stud_id'];
