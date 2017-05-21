@@ -781,7 +781,7 @@ CH;
 							<?php
 
                  echo <<<GEN
-									<a class="pull-right" href="../../registrar/credentials/choose_credential.php?stud_id=$stud_id"><button type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Please verify first if the grades and attendance are complete."><i class="fa fa-print m-right-xs"></i> Generate Credentials</button></a>
+									<a class="pull-right" href="../../registrar/credentials/request_credential.php?stud_id=$stud_id"><button type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Please verify first if the grades and attendance are complete."><i class="fa fa-print m-right-xs"></i> Generate Credentials</button></a>
 GEN;
               ?>
 						</div>

@@ -105,6 +105,15 @@
 						</p>
                         </div>
                       </div>
+                      <div class="item form-group">
+                      <?php 
+                      	$req_id = $_GET['req_id'];
+                      ?>
+						<label class="control-label col-md-3 col-sm-3 col-xs-12">Request ID</label>
+						<div class="col-md-6 col-sm-6 col-xs-12">
+							<input id="name" class="form-control col-md-7 col-xs-12" required="required" type="text" name="req_id" readonly="" value=<?php echo "'$req_id'"; ?>>
+						</div>
+					</div>
 					<div class="item form-group">
 						<label class="control-label col-md-3 col-sm-3 col-xs-12">Date Today</label>
 						<div class="col-md-6 col-sm-6 col-xs-12">

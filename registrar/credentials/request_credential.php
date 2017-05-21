@@ -81,13 +81,19 @@
 			</div>
 			<div class="x_content">
 
-
+			<?php
+				if(isset($_GET['stud_id']) && $_GET['stud_id'] != "") {
+					$search = $_GET['stud_id'];
+				}else {
+					$search = "";
+				}
+			?>
 				<form id="choose_cred" class="form-horizontal form-label-left" action="verify_student.php" method="GET" >
 						<div class="form-group">
-							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="full-name">Full Name <span class="required">*</span>
+							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="full-name">Full Name or Student ID<span class="required">*</span>
 								</label>
 								<div class="col-md-6 col-sm-6 col-xs-12">
-									<input type="text" id="full-name" name="full-name" required="required" class="form-control">
+									<input type="text" id="full-name" name="full-name" required="required" class="form-control" value=<?php echo "'$search'"; ?>>
 								</div>
 							</div>
 						<div class="form-group">

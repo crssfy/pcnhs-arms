@@ -95,7 +95,7 @@
                     $purpose = $_GET['purpose'];
                     if($_GET['full-name']) {
                       $search = htmlspecialchars($_GET['full-name']);
-                      $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id where concat(first_name, ' ', last_name) like '$search%'";
+                      $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id where concat(first_name, ' ', last_name) like '$search%' or stud_id like '$search'";
 
 
                       $result = DB::query($statement);

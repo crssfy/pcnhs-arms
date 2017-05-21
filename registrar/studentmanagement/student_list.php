@@ -218,6 +218,7 @@
                       <th data-sorter="false">First Name</th>
                       <th data-sorter="false">Middle Name</th>
                       <th data-sorter="false">Curriculum</th>
+                      <th data-sorter="false">Year Level</th>
                       <th data-sorter="false">Date Modified</th>
                       <th data-sorter="false">Action</th>
                     </tr>
@@ -272,7 +273,7 @@
                       $statement = "SELECT * from students left join curriculum on students.curr_id = curriculum.curr_id left join grades using (stud_id) where last_name like '$search%' or first_name like '$search%' or stud_id like '$search%' or concat(first_name,' ',last_name) like '$search%' or concat(last_name,' ',first_name,' ',mid_name) like '$search%' or concat(first_name,' ',mid_name,' ',last_name) like '$search%' order by $sort $sorttype limit $start, $limit;";
                     }else {
                       if($filter=="all") {
-                        $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id join grades using (stud_id) where 1+1 = 2 $filtersy order by $sort $sorttype limit $start, $limit;";
+                        $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id join grades using (stud_id) where 1+1 = 2 $filtersy group by stud_id order by $sort $sorttype limit $start, $limit;";
                       }elseif ($filter == "graduate") {
                          $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id left join grades using (stud_id) where yr_level >= 4 $filtersy group by stud_id order by $sort $sorttype limit $start, $limit;";
                       }else {
@@ -299,7 +300,16 @@
                       if(empty($date_modified)) {
                         $date_modified = "No grades edited.";
                       }
-
+                      $display_yr = "select yr_level from grades where stud_id = '$stud_id' order by yr_level desc limit 1;";
+                      $result_display_yr = DB::query($display_yr);
+                      if(count($result_display_yr) > 0) {
+                        foreach($result_display_yr as $row_yr) {
+                          $yr_level = $row_yr['yr_level'];
+                        }
+                        
+                      }else {
+                        $yr_level =  "";
+                      }
 
                       echo <<<STUDLIST
                       <tr>
@@ -308,10 +318,11 @@
                         <td>$first_name</td>
                         <td>$mid_name</td>
                         <td>$curr_code</td>
+                        <td>$yr_level</td>
                         <td>$date_modified</td>
                         <td>
                           <center>
-                            <a href="../../registrar/studentmanagement/student_info.php?stud_id=$stud_id" class="btn btn-default"> View Student Record </a>
+                            <a href="../../registrar/studentmanagement/student_info.php?stud_id=$stud_id" class="btn btn-default"> View Record </a>
                           </center>
                         </td>
                       </tr
@@ -327,7 +338,7 @@ STUDLIST;
                       $statement = "SELECT * from students left join curriculum on students.curr_id = curriculum.curr_id left join grades using (stud_id) where last_name like '$search%' or first_name like '$search%' or stud_id like '$search%' or concat(first_name,' ',last_name) like '$search%' or concat(last_name,' ',first_name,' ',mid_name) like '$search%' or concat(first_name,' ',mid_name,' ',last_name) like '$search%' order by $sort $sorttype;";
                     }else {
                       if($filter=="all") {
-                        $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id join grades using (stud_id) where 1+1 = 2 $filtersy order by $sort $sorttype;";
+                        $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id join grades using (stud_id) where 1+1 = 2 $filtersy group by stud_id order by $sort $sorttype;";
                       }elseif ($filter == "graduate") {
                          $statement = "select * from students left join curriculum on students.curr_id = curriculum.curr_id left join grades using (stud_id) where yr_level >= 4 $filtersy group by stud_id order by $sort $sorttype;";
                       }else {

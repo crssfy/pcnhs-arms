@@ -15,6 +15,7 @@
     }
 	// +++++++++++++++++
 	$stud_id = $_GET['stud_id'];
+	$req_id = $_POST['req_id'];
 	$cred_id = htmlspecialchars($_POST['credential'], ENT_QUOTES);
     $request_type = htmlspecialchars($_POST['request_type'], ENT_QUOTES);
     $signatory = htmlspecialchars($_POST['signatory'], ENT_QUOTES);
@@ -27,7 +28,9 @@
      if(empty($admitted_to)) {
       $admitted_to = "N/A";
     }
-
+    DB::update('requests', array(
+					'date_processed' => $date
+				), "req_id=%i", $req_id);
     $checkpending = "SELECT * FROM pcnhsdb.requests where status = 'p' and stud_id = '$stud_id' and cred_id = '$cred_id' order by req_id desc limit 1;";
     $result = DB::query($checkpending);
 		if(count($result) > 0) {

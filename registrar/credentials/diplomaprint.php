@@ -4,6 +4,12 @@
 <?php session_start(); ?>
 <?php $stud_id = htmlspecialchars($_GET['stud_id'], ENT_QUOTES) ?>
 <?php
+    $date = $_POST['date'];
+    $req_id = $_POST['req_id'];
+    DB::update('requests', array(
+          'date_processed' => $date
+        ), "req_id=%i", $req_id);
+
     if(!isset($_SESSION['generated_diploma'])) {
       $_SESSION['generated_diploma'] = true;
     }else {
