@@ -364,6 +364,7 @@ NUM;
                         </table>
 
                         <div class="clearfix"></div>
+
                         <div class="col-md-2 col-xs-12">
                             <label for="average">Average Grade: </label>
                             <input id="average" class="form-control" type="text" style="width: 70px;" value="" name="average_grade">
@@ -380,14 +381,110 @@ NUM;
                                  <button type="button" class="btn btn-primary" onclick="computeCredit(); computeAverage();"><i class="glyphicon glyphicon-plus"></i> Compute</button>
                             </div>
 
-                            <div class="pull-right">
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="ln_solid"></div>
+                        <!-- Attendnance -->
+                        <div class="row">
+                          <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Attendance</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                    <!-- First -->
+
+                                      <?php
+                                                  $stud_id = $_GET['stud_id'];
+                                                  $yr_level = $_GET['yr_level'];
+                                                  $stryr = "";
+                                                  if($_GET['yr_level'] > 1) {
+
+                                                      $pschool_year = "";
+
+                                                      $yr_level = intval($_GET['yr_level'])-1;
+                                                      $statement = "SELECT * from attendance where stud_id = '$stud_id' and yr_level = $yr_level;";
+                                                      $result = DB::query($statement);
+                                                      if(count($result) > 0) {
+                                                        foreach ($result as $row) {
+                                                          $pschool_year = $row['schl_yr'];
+                                                        }
+
+                                                        $explode_pschool_year = explode("-", $pschool_year);
+
+                                                        $yr1 = intval($explode_pschool_year[0]);
+                                                        $yr2 = intval($explode_pschool_year[1]);
+
+                                                        $yr1plus1 = $yr1+1;
+                                                        $yr2plus1 = $yr2+1;
+                                                        $stryr = $yr1plus1.' - '.$yr2plus1;
+
+                                                      }
+
+                                                  }else {
+                                                       $pschool_year = "";
+
+                                                      $statement = "SELECT * FROM pcnhsdb.students NATURAL JOIN primaryschool where stud_id = '$stud_id';";
+                                                      $result = DB::query($statement);
+                                                      if(count($result) > 0) {
+                                                        foreach ($result as $row) {
+                                                          $pschool_year = $row['pschool_year'];
+                                                        }
+
+
+
+                                                        $explode_pschool_year = explode("-", $pschool_year);
+
+                                                        $yr1 = intval($explode_pschool_year[0]);
+                                                        $yr2 = intval($explode_pschool_year[1]);
+
+                                                        $yr1plus1 = $yr1+1;
+                                                        $yr2plus1 = $yr2+1;
+                                                        $stryr = $yr1plus1.' - '.$yr2plus1;
+                                                      }
+                                                  }
+                                              ?>
+                                      <div class="item form-group">
+                                          <label class="control-label col-md-3 col-sm-3 col-xs-12">Total Years in School</label>
+                                          <div class="col-md-4 col-sm-6 col-xs-12">
+                                              <input type="text" class="form-control col-md-7 col-xs-12" name="total_years_in_school" required="" value=<?php $yr_level = $_GET['yr_level']; echo $yr_level+6; ?>>
+                                          </div>
+                                      </div>
+                                      <div class="item form-group">
+                                          <label class="control-label col-md-3 col-sm-3 col-xs-12">School Year</label>
+                                          <div class="col-md-4 col-sm-6 col-xs-12">
+                                              <input type="text" class="form-control col-md-7 col-xs-12" name="schl_year" placeholder="YYYY - YYYY" data-inputmask="'mask': '9999 - 9999'" value=<?php echo "'$stryr'"; ?> required="" >
+                                          </div>
+                                      </div>
+                                      <div class="item form-group">
+                                          <label class="control-label col-md-3 col-sm-3 col-xs-12">Days of School</label>
+                                          <div class="col-md-4 col-sm-6 col-xs-12">
+                                              <input type="text" class="form-control col-md-7 col-xs-12" name="school_days" required="" >
+                                          </div>
+                                      </div>
+                                      <div class="item form-group">
+                                          <label class="control-label col-md-3 col-sm-3 col-xs-12">Days Attended</label>
+                                          <div class="col-md-4 col-sm-6 col-xs-12">
+                                              <input type="text" class="form-control col-md-7 col-xs-12" name="days_attended" required="" >
+                                          </div>
+                                      </div>
+                                     <!--  <div class="item form-group">
+                                          <label class="control-label col-md-3 col-sm-3 col-xs-12">Total Years in School</label>
+                                          <div class="col-md-4 col-sm-6 col-xs-12">
+                                              <input type="number" class="form-control col-md-7 col-xs-12" name="days_attended" required="" >
+                                          </div>
+                                      </div> -->
+                                      <div class="clearfix"></div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="pull-right">
                                 <button type="reset" class="btn btn-default" onclick="releaseData();">Clear Fields</button>
 
                                 <button type="" class="btn btn-primary" onclick="saveToFile();" data-toggle="tooltip" data-placement="top" title="Save grades as CSV"><i class="glyphicon glyphicon-floppy-disk"></i> Save to File</button>
                                 <button type="submit" id="send" class="btn btn-success" onclick="saveToDB();"><i class="glyphicon glyphicon-floppy-disk"></i> Save to Database</button>
                             </div>
-
-                        </div>
+                        <!-- Attendance END -->
                     </form>
                     <div class="ln_solid"></div>
                     <form action="phpscript/parsegrades.php" method="POST" enctype="multipart/form-data">
