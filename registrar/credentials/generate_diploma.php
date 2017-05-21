@@ -240,7 +240,7 @@
 	<div class="row no-print">
 		<div class="col-xs-12">
 			<button class="btn btn-primary pull-right"><i class="fa fa-print"></i> Generate</button>
-			<a class="btn btn-default pull-right" href=<?php echo "choose_credential.php?stud_id=$stud_id"; ?>>Cancel</a>
+			<a class="btn btn-default pull-right" href="requests.php">Cancel</a>
 		</div>
 	</div>
 </form>
