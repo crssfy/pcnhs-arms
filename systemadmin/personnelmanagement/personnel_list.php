@@ -180,18 +180,19 @@
                                     $accnt_status = $row['accnt_status'];
 
                                     if ($row['accnt_status'] == "ACTIVE") {
-                                      $accnt_status = "<button class='btn btn-success btn-xs'> <i class='fa fa-eye'></i>&nbsp Activated &ensp;&ensp;</button>";
+                                      $accnt_status = "<a href = 'personnel_edit.php?per_id=$per_id' class='btn btn-success btn-xs'> <i class='fa fa-eye'></i>&nbsp Activated &ensp;&ensp;</a>";
                                     }
                                     else {
-                                      $accnt_status = "<button class='btn btn-danger btn-xs'> <i class='fa fa-eye-slash'></i>&nbsp Deactivated</button>";
+                                      $accnt_status = "<a href = 'personnel_edit.php?per_id=$per_id' class='btn btn-danger btn-xs'> <i class='fa fa-eye-slash'></i>&nbsp Deactivated</a>";
                                     }
                                     if ($row['access_type'] == "REGISTRAR") {
-                                      $access_type = "<button class='btn btn-warning btn-xs'> <i class='fa fa-pencil'></i>&nbsp Registrar  &ensp;&ensp;&ensp;&nbsp </button>";
+                                      $access_type = "<a href = 'personnel_edit.php?per_id=$per_id'class='btn btn-warning btn-xs'> <i class='fa fa-pencil'></i>&nbsp Registrar  &ensp;&ensp;&ensp;&nbsp </a>";
                                     }
                                     else {
-                                      $access_type = "<button class='btn btn-dark btn-xs'> <i class='fa fa-wrench'></i>&nbsp Administrator</button>";
+                                      $access_type = "<a href = 'personnel_edit.php?per_id=$per_id' class='btn btn-dark btn-xs'> <i class='fa fa-wrench'></i>&nbsp Administrator</a>";
                                     }
-                                  echo <<<PERSONNELLIST
+                                
+                                echo <<<PERSONNELLIST
                                           <tr class="odd pointer">
                                                         <td class=" ">$per_id</td>
                                                         <td class=" ">$uname</td>

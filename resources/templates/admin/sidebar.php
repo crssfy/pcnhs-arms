@@ -53,7 +53,10 @@ echo <<<SB
                       <li><a href="$base_url/systemadmin/schoolmanagement/signatory_add.php">Add Signatory</a></li>
                     </ul>
                   </li>
-                  
+
+
+                      <li><a href="$base_url/systemadmin/databasemanagement/exp_db.php"><i class="fa fa-database"></i> Generate Backup</a></li>
+
                 </ul>
               </div>
 

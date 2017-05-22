@@ -19,8 +19,23 @@
 
     DB::query($updatestmt);
 
-   	$sign_edit = "EDITED SIGNATORY: $sign_id";
-   	$_SESSION['user_activity'][] = $sign_edit;
+	//USER LOGS
+	date_default_timezone_set('Asia/Manila');
+	$sign_act_msg= "EDITED SIGNATORY: $sign_id";
+	$username = $_SESSION['username'];
+	$currTime = date("h:i:s A");
+	$log_id = null;
+	$currDate = date("Y-m-d");
+	$accnt_type = $_SESSION['accnt_type'];
+
+	DB::insert('user_logs', array(
+	      'log_id' => $log_id,
+	      'user_name' => $username,
+	      'time' => $currTime,
+	      'log_date' => $currDate,
+	      'account_type' => $accnt_type,
+	      'user_act' => $sign_act_msg,
+	));
 
     $alert_type = "info";
     $message = "Signatory Information Edited Successfully";

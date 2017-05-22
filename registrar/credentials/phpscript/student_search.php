@@ -2,7 +2,7 @@
 	require_once "../../../resources/config.php";
 	$search = $_GET['query'];
 
-	$query = "SELECT * from students left join curriculum on students.curr_id = curriculum.curr_id where last_name like '$search%' or first_name like '$search%';";
+	$query = "SELECT * from students left join curriculum on students.curr_id = curriculum.curr_id where last_name like '$search%' or first_name like '$search%' or stud_id like '$search';";
 
 	$result = DB::query($query);
 	if (count($result) > 0) {

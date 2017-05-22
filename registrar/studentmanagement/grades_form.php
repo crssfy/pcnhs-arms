@@ -37,7 +37,7 @@
         die();
     }
 
-    $checkgrade = "SELECT * from pcnhsdb.grades where stud_id = '$stud_id' AND yr_level = $yr_level";
+    $checkgrade = "SELECT * from pcnhsdb.grades where stud_id = '$stud_id' AND yr_level = $yr_level and remarks is null;";
     $result = DB::query($checkgrade);
     if (count($result) > 0) {
         $alert_type = "danger";
@@ -364,6 +364,7 @@ NUM;
                         </table>
 
                         <div class="clearfix"></div>
+
                         <div class="col-md-2 col-xs-12">
                             <label for="average">Average Grade: </label>
                             <input id="average" class="form-control" type="text" style="width: 70px;" value="" name="average_grade">
@@ -380,14 +381,53 @@ NUM;
                                  <button type="button" class="btn btn-primary" onclick="computeCredit(); computeAverage();"><i class="glyphicon glyphicon-plus"></i> Compute</button>
                             </div>
 
-                            <div class="pull-right">
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="ln_solid"></div>
+                        <!-- Attendnance -->
+                        <div class="row">
+                          <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Attendance</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                              <div class="x_content">
+                                <!-- First -->
+                                <div class="item form-group">
+                                  <label class="control-label col-md-3 col-sm-3 col-xs-12">Total Years in School</label>
+                                  <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <input type="text" class="form-control col-md-7 col-xs-12" name="total_years_in_school" required="" value=<?php $yr_level = $_GET['yr_level']; echo $yr_level+6; ?>>
+                                  </div>
+                                </div>
+                                <div class="item form-group">
+                                  <label class="control-label col-md-3 col-sm-3 col-xs-12">Days of School</label>
+                                  <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <input type="text" class="form-control col-md-7 col-xs-12" name="school_days" required="" >
+                                  </div>
+                                </div>
+                                <div class="item form-group">
+                                  <label class="control-label col-md-3 col-sm-3 col-xs-12">Days Attended</label>
+                                  <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <input type="text" class="form-control col-md-7 col-xs-12" name="days_attended" required="" >
+                                  </div>
+                                </div>
+                                <!--  <div class="item form-group">
+                                  <label class="control-label col-md-3 col-sm-3 col-xs-12">Total Years in School</label>
+                                  <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <input type="number" class="form-control col-md-7 col-xs-12" name="days_attended" required="" >
+                                  </div>
+                                </div> -->
+                                <div class="clearfix"></div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="pull-right">
                                 <button type="reset" class="btn btn-default" onclick="releaseData();">Clear Fields</button>
 
                                 <button type="" class="btn btn-primary" onclick="saveToFile();" data-toggle="tooltip" data-placement="top" title="Save grades as CSV"><i class="glyphicon glyphicon-floppy-disk"></i> Save to File</button>
                                 <button type="submit" id="send" class="btn btn-success" onclick="saveToDB();"><i class="glyphicon glyphicon-floppy-disk"></i> Save to Database</button>
                             </div>
-
-                        </div>
+                        <!-- Attendance END -->
                     </form>
                     <div class="ln_solid"></div>
                     <form action="phpscript/parsegrades.php" method="POST" enctype="multipart/form-data">

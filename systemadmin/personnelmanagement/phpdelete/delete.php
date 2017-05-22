@@ -25,8 +25,24 @@ if (count($resultCheckPw) > 0) {
             $delstmnt = "DELETE FROM PERSONNEL WHERE per_id = '$per_id'";
             DB::query($delstmnt);
 
-            $per_delete = "DELETED PERSONNEL ACCOUNT: $per_id";
-            $_SESSION['user_activity'][] = $per_delete;
+            //USER LOGS
+            date_default_timezone_set('Asia/Manila');
+            $per_act_msg= "DELETED PERSONNEL ACCOUNT : $per_id";
+            $username = $_SESSION['username'];
+            $currTime = date("h:i:s A");
+            $log_id = null;
+            $currDate = date("Y-m-d");
+            $accnt_type = $_SESSION['accnt_type'];
+
+            DB::insert('user_logs', array(
+              'log_id' => $log_id,
+              'user_name' => $username,
+              'time' => $currTime,
+              'log_date' => $currDate,
+              'account_type' => $accnt_type,
+              'user_act' => $per_act_msg,
+            ));
+
             $alert_type = "danger";
             $message = "Personnel Account Deleted";
             $popover = new Popover();
